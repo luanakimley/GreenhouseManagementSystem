@@ -1,5 +1,6 @@
 from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
+import sass
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
@@ -10,9 +11,7 @@ Session(app)
 
 @app.route("/")
 def index():
-    if not session.get("name"):
-        return redirect("/login")
-    return render_template("index.html")
+    return render_template("entry.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
