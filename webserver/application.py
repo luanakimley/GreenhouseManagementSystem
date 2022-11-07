@@ -1,6 +1,5 @@
 from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
-import sass
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
@@ -20,10 +19,12 @@ def login():
         name = request.form.get("name")
         session["name"] = name
         return redirect("/")
-    #     Remember that user is logged in
-    #     Redirect to /
-
     return render_template("login.html")
+
+
+@app.route("/signup")
+def signup():
+    return render_template("signup.html")
 
 
 @app.route("/logout")

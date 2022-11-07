@@ -25,6 +25,34 @@ h1, h2, h3, h4, h5, h6 {
   color: white;
 }
 
+.btn-secondary {
+  background-color: #31453D;
+  color: white;
+  border-radius: 50px;
+}
+.btn-secondary:hover {
+  background-color: #31453D;
+  border-color: #31453D;
+  color: white;
+}
+.btn-secondary:active {
+  background-color: #31453D;
+  border-color: #31453D;
+  color: white;
+}
+.btn-secondary:focus {
+  background-color: #31453D;
+  border-color: #31453D;
+  color: white;
+}
+
+.back-button {
+  color: #31453D;
+}
+.back-button:hover {
+  color: #31453D;
+}
+
 .logo {
   width: 155px;
 }

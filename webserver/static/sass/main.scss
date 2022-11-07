@@ -35,6 +35,38 @@ h1, h2, h3, h4, h5, h6 {
 
 }
 
+.btn-secondary {
+    background-color: $green;
+    color: white;
+    border-radius: 50px;
+
+    &:hover {
+        background-color: $green;
+        border-color: $green;
+        color: white;
+    }
+
+    &:active {
+        background-color: $green;
+        border-color: $green;
+        color: white;
+    }
+
+    &:focus {
+        background-color: $green;
+        border-color: $green;
+        color: white;
+    }
+}
+
+.back-button {
+    color: $green;
+
+    &:hover {
+        color: $green;
+    }
+}
+
 .logo {
     width: 155px;
 }

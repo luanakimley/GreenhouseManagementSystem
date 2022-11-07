@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block body %}
+<form action = "/login" method = "post" class="my-auto">
+  <div class="d-grid gap-2 col-7 mx-auto text-center">
+    <span class="d-flex text-start mt-5 align-items-center gap-3">
+      <a class="back-button" href="/">
+        <span class="material-icons material-symbols-outlined">arrow_back</span>
+      </a>
+      <h2>Sign Up</h2>
+    </span>
+    <hr>
+    <div class="form-floating mb-3">
+      <input type="email" class="form-control" id="floatingInputEmail" placeholder="name@example.com">
+      <label for="floatingInputEmail">Email address</label>
+    </div>
+      <div class="form-floating mb-3">
+      <input type="text" class="form-control" id="floatingInputUsername" placeholder="name@example.com">
+      <label for="floatingInputUsername">Username</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+      <label for="floatingPassword">Password</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingConfirmPassword" placeholder="Password">
+      <label for="floatingConfirmPassword">Confirm Password</label>
+    </div>
+    <input type="button" class="btn btn-secondary p-2 mt-5" value="Sign Up">
+  </div>
+</form>
+{% endblock %}

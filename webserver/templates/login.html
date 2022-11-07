@@ -1,8 +1,23 @@
 {% extends "layout.html" %}
 {% block body %}
-<img class="logo" src="/static/images/evergreens_logo.png" alt="Evergreens Logo">
-<form action = "/login" method = "post">
-  <input autocomplete="off" autofocus name="name" placeholder="Name" type="text">
-  <input type = "submit">
+<form action = "/login" method = "post" class="my-auto">
+  <div class="d-grid gap-2 col-7 mx-auto text-center">
+    <span class="d-flex text-start mt-5 align-items-center gap-3">
+      <a class="back-button" href="/">
+        <span class="material-icons material-symbols-outlined">arrow_back</span>
+      </a>
+      <h2>Log In</h2>
+    </span>
+    <hr>
+    <div class="form-floating mb-3">
+      <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+      <label for="floatingInput">Email address / Username</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+      <label for="floatingPassword">Password</label>
+    </div>
+    <input type="button" class="btn btn-secondary p-2 mt-5" value="Log In">
+  </div>
 </form>
 {% endblock %}
