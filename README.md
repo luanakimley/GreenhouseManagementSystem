@@ -3,7 +3,7 @@ by The Evergreens (Luana Kimley, Shakira Lynch, Teodor Donchev, Vincent Arellano
 
 ![The Evergreens Logo](https://i.ibb.co/qxzbBns/Screenshot-2022-09-27-at-10-28-47-removebg-preview.png)
 
-This is a repository for out 3rd year Computing in Software Development Universal Design Principles and IoT Development project.
+This is a repository for our 3rd year Computing in Software Development Universal Design Principles and IoT Development project.
 
 The greenhouse management system will provide monitoring and control of the most vital parameters of the crop lifecycle. 
 - Monitoring of air temperature
