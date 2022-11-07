@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,800;1,800&family=Quattrocento+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+$off-white: #FEFAF5;
+$green: #31453D;
+
+$heading-font: 'Playfair Display', serif;
+$body-font: 'Quattrocento Sans', sans-serif;
+
+html {
+    height: 100%;
+}
+
+body {
+    background-color: $off-white;
+    font-family: $body-font;
+    height: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: $heading-font;
+    color: $green;
+}
+
+
+.btn-outline-secondary {
+    border-color: $green;
+    color: $green;
+    border-radius: 50px;
+
+    &:hover {
+        background-color: $green;
+        border-color: $green;
+        color: white;
+    }
+
+}
+
+.logo {
+    width: 155px;
+}
