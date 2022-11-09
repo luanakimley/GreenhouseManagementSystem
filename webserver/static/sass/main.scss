@@ -40,22 +40,20 @@ h1, h2, h3, h4, h5, h6 {
     color: white;
     border-radius: 50px;
 
-    &:hover {
+    &:hover, &:active, &:focus {
         background-color: $green;
         border-color: $green;
         color: white;
     }
+}
 
-    &:active {
-        background-color: $green;
-        border-color: $green;
-        color: white;
-    }
+.btn-light {
+    background-color: white;
+    border-color: $green;
 
-    &:focus {
-        background-color: $green;
+    &:active, &:focus, &:hover {
+        background-color: white;
         border-color: $green;
-        color: white;
     }
 }
 

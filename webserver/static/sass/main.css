@@ -30,20 +30,19 @@ h1, h2, h3, h4, h5, h6 {
   color: white;
   border-radius: 50px;
 }
-.btn-secondary:hover {
+.btn-secondary:hover, .btn-secondary:active, .btn-secondary:focus {
   background-color: #31453D;
   border-color: #31453D;
   color: white;
 }
-.btn-secondary:active {
-  background-color: #31453D;
+
+.btn-light {
+  background-color: white;
   border-color: #31453D;
-  color: white;
 }
-.btn-secondary:focus {
-  background-color: #31453D;
+.btn-light:active, .btn-light:focus, .btn-light:hover {
+  background-color: white;
   border-color: #31453D;
-  color: white;
 }
 
 .back-button {

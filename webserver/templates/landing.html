@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="h-100 d-flex align-items-center">
+  <div class="d-grid gap-2 col-7 mx-auto text-center">
+    <img class="logo mx-auto" src="/static/images/evergreens_logo.png" alt="Evergreens Logo">
+    <h2 class="mb-5">Welcome, (name)!</h2>
+    Choose culture program:
+    <div class="dropdown">
+      <a class="btn btn-light dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+        Choose crop you are planting
+      </a>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+        <li><a class="dropdown-item" href="#">Lettuce</a></li>
+        <li><a class="dropdown-item" href="#">Strawberry</a></li>
+        <li><a class="dropdown-item" href="#">Peas</a></li>
+      </ul>
+      <br>
+      <input type="button" class="btn btn-secondary p-2 mt-5 w-50" value="Submit">
+    </div>
+  </div>
+</div>
+{% endblock %}
