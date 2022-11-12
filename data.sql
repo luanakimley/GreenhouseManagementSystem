@@ -29,13 +29,17 @@ create table Users (users_id int NOT NULL AUTO_INCREMENT,
 username varchar(30),
 email varchar(125),
 password varchar(30),
+UNIQUE(username),
+UNIQUE(email),
 PRIMARY KEY (users_id));
 
 create table PlantData (plants_id int NOT NULL AUTO_INCREMENT,
 users_id int NOT NULL,
 presetData_id int NOT NULL,
+/*Not sure if code below this is needed*/
 culture_id int NOT NULL,
 lifecycle_id int NOT NULL,
+/*Not sure if code above this is needed*/
 creation_dateTime DATETIME,
 temp double,
 tempMin double,
