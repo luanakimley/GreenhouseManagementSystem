@@ -1,6 +1,7 @@
 from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
 from flask_mysqldb import MySQL
+import bcrypt
 
 from dotenv import load_dotenv
 import os
@@ -46,18 +47,22 @@ def signup():
 
 @app.route("/register", methods=["POST"])
 def register():
-    email = request.form.get("email")
-    username = request.form.get("username")
-    password = request.form.get("password")
+    try:
+        email = request.form.get("email")
+        username = request.form.get("username")
+        password = request.form.get("password")
 
-    # TODO: encrypt password
-    # TODO: ensure no duplicate email and username
-    cursor = mysql.connection.cursor()
-    cursor.execute('''insert into Users(username, email, password) values (%s, %s, %s)''', (username, email, password))
-    mysql.connection.commit()
-    cursor.close()
+        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-    return redirect("/landing")
+        cursor = mysql.connection.cursor()
+        cursor.execute('''insert into Users(username, email, password) values (%s, %s, %s)''',
+                       (username, email, hashed))
+        mysql.connection.commit()
+        cursor.close()
+
+        return redirect("/landing")
+    except:
+        return redirect("/signup")
 
 
 @app.route("/logout")
