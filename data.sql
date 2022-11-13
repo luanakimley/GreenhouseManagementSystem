@@ -28,7 +28,7 @@ FOREIGN KEY (lifecycle_id) REFERENCES Lifecycle(lifecycle_id));
 create table Users (users_id int NOT NULL AUTO_INCREMENT,
 username varchar(30),
 email varchar(125),
-password varchar(30),
+password varchar(300),
 UNIQUE(username),
 UNIQUE(email),
 PRIMARY KEY (users_id));
