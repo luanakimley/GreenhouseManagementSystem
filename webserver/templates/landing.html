@@ -3,7 +3,7 @@
 <div class="h-100 d-flex align-items-center">
   <div class="d-grid gap-2 col-7 mx-auto text-center">
     <img class="logo mx-auto" src="/static/images/evergreens_logo.png" alt="Evergreens Logo">
-    <h2 class="mb-5">Welcome, (name)!</h2>
+    <h2 class="mb-5">Welcome, {{ session.username }}!</h2>
     Choose culture program:
     <div class="dropdown">
       <a class="btn btn-light dropdown-toggle text-black-50" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">

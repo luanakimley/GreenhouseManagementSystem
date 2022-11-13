@@ -58,6 +58,6 @@ function validateConfirmPassword() {
     }
 }
 
-function validateRegisterForm() {
+function validateSignUpForm() {
     return validateEmail() && validateUsername() && validatePassword() && validateConfirmPassword()
 }

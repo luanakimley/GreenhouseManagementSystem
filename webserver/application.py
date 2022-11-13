@@ -27,17 +27,32 @@ mysql = MySQL(app)
 
 @app.route("/")
 def index():
-    return render_template("entry.html")
+    if not session.get("username") and not session.get("email"):
+        return render_template("entry.html")
+    return render_template("monitoring.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    # TODO: fix login functionality
-    if request.method == "POST":
-        name = request.form.get("name")
-        session["name"] = name
-        return redirect("/")
     return render_template("login.html")
+
+
+@app.route("/login_action", methods=["POST"])
+def login_action():
+    try:
+        cursor = mysql.connection.cursor()
+        email = request.form.get("email")
+        password = request.form.get("password")
+        cursor.execute('''select * from Users where email=%s and password=%s ''',
+                       (email, password))
+        user_data = cursor.fetchall()
+
+        session["username"] = user_data[0][1]
+        session["email"] = user_data[0][2]
+
+        return redirect("/")
+    except:
+        return redirect("/login")
 
 
 @app.route("/signup")
@@ -45,7 +60,7 @@ def signup():
     return render_template("signup.html")
 
 
-@app.route("/register", methods=["POST"])
+@app.route("/signup_action", methods=["POST"])
 def register():
     try:
         email = request.form.get("email")
@@ -54,9 +69,12 @@ def register():
 
         hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
+        session["username"] = username
+        session["email"] = email
+
         cursor = mysql.connection.cursor()
         cursor.execute('''insert into Users(username, email, password) values (%s, %s, %s)''',
-                       (username, email, hashed))
+                       (username, email, password))
         mysql.connection.commit()
         cursor.close()
 
@@ -67,12 +85,15 @@ def register():
 
 @app.route("/logout")
 def logout():
-    session["name"] = None
+    session["username"] = None
+    session["email"] = None
     return redirect("/")
 
 
 @app.route("/landing")
 def landing():
+    if not session.get("username") and not session.get("email"):
+        return redirect("/")
     return render_template("landing.html")
 
 
