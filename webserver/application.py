@@ -44,12 +44,13 @@ def login_action():
         email = request.form.get("email")
         user_password = request.form.get("password")
 
-        cursor.execute("SELECT * FROM Users WHERE email =%s", [email])
+        cursor.execute("select * from Users where email =%s", [email])
         user_data = cursor.fetchall()
         password = user_data[0][3]
 
-        salt = b'$2b$12$T9sRNpwI2.sMPmz/OtI1peh'
+        salt = os.getenv('SALT').encode()
         if bcrypt.hashpw(user_password.encode('utf-8'), salt) == password.encode('utf-8'):
+            session["users_id"] = user_data[0][0]
             session["username"] = user_data[0][1]
             session["email"] = user_data[0][2]
             return redirect("/")
@@ -71,7 +72,7 @@ def register():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        salt = b'$2b$12$T9sRNpwI2.sMPmz/OtI1peh'
+        salt = os.getenv('SALT').encode()
         hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
 
         session["username"] = username
@@ -81,8 +82,13 @@ def register():
         cursor.execute('''insert into Users(username, email, password) values (%s, %s, %s)''',
                        (username, email, hashed))
         mysql.connection.commit()
-        cursor.close()
 
+        cursor.execute("select users_id from Users where email=%s", [email])
+        users_id = cursor.fetchall()[0][0]
+
+        session["users_id"] = users_id
+
+        cursor.close()
         return redirect("/landing")
     except:
         return redirect("/signup")
@@ -99,7 +105,17 @@ def logout():
 def landing():
     if not session.get("username") and not session.get("email"):
         return redirect("/")
-    return render_template("landing.html")
+    cursor = mysql.connection.cursor()
+    cursor.execute("select * from Culture")
+    cultures = cursor.fetchall()
+    return render_template("landing.html", cultures=cultures)
+
+
+@app.route("/culture_submit", methods=["POST"])
+def culture_submit():
+    culture = request.form.get("culture")
+    # TODO: add to database
+    return redirect("/")
 
 
 if __name__ == '__main__':
