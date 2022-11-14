@@ -42,15 +42,19 @@ def login_action():
     try:
         cursor = mysql.connection.cursor()
         email = request.form.get("email")
-        password = request.form.get("password")
-        cursor.execute('''select * from Users where email=%s and password=%s ''',
-                       (email, password))
+        user_password = request.form.get("password")
+
+        cursor.execute("SELECT * FROM Users WHERE email =%s", [email])
         user_data = cursor.fetchall()
+        password = user_data[0][3]
 
-        session["username"] = user_data[0][1]
-        session["email"] = user_data[0][2]
-
-        return redirect("/")
+        salt = b'$2b$12$T9sRNpwI2.sMPmz/OtI1peh'
+        if bcrypt.hashpw(user_password.encode('utf-8'), salt) == password.encode('utf-8'):
+            session["username"] = user_data[0][1]
+            session["email"] = user_data[0][2]
+            return redirect("/")
+        else:
+            return redirect("/login")
     except:
         return redirect("/login")
 
@@ -67,14 +71,15 @@ def register():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        salt = b'$2b$12$T9sRNpwI2.sMPmz/OtI1peh'
+        hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
 
         session["username"] = username
         session["email"] = email
 
         cursor = mysql.connection.cursor()
         cursor.execute('''insert into Users(username, email, password) values (%s, %s, %s)''',
-                       (username, email, password))
+                       (username, email, hashed))
         mysql.connection.commit()
         cursor.close()
 
