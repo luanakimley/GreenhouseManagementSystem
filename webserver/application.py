@@ -29,6 +29,15 @@ mysql = MySQL(app)
 def index():
     if not session.get("username") and not session.get("email"):
         return render_template("entry.html")
+
+    users_id = session["users_id"]
+    cursor = mysql.connection.cursor()
+    cursor.execute("select * from UCL where users_id=%s", (users_id,))
+    user_culture_lifecycle = cursor.fetchall()
+
+    if len(user_culture_lifecycle) == 0:
+        return redirect("/landing")
+
     return render_template("monitoring.html")
 
 
@@ -114,7 +123,10 @@ def landing():
 @app.route("/culture_submit", methods=["POST"])
 def culture_submit():
     culture = request.form.get("culture")
-    # TODO: add to database
+    cursor = mysql.connection.cursor()
+    cursor.execute('''insert into UCL(users_id, culture_id, lifecycle_id) values (%s, %s, %s)''',
+                   (session["users_id"], culture, 1))
+    mysql.connection.commit()
     return redirect("/")
 
 
