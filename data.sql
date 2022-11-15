@@ -1,7 +1,7 @@
 DROP DATABASE IF EXISTS GMS;
 CREATE DATABASE GMS;
 USE GMS;
-drop table if exists Users, PlantData, Notifications, Users_Notifications, PresetData, Lifecycle, Culture;
+drop table if exists Users, CropData, Notifications, Users_Notifications, PresetData, Lifecycle, Culture, UCL, DataRanges;
 
 /*Creating tables*/
 create table Culture (culture_id int NOT NULL AUTO_INCREMENT,
@@ -23,39 +23,45 @@ pHMin double,
 pHMax double,
 PRIMARY KEY (presetData_id),
 FOREIGN KEY (culture_id) REFERENCES Culture(culture_id),
-FOREIGN KEY (lifecycle_id) REFERENCES Lifecycle(lifecycle_id)); 
+FOREIGN KEY (lifecycle_id) REFERENCES Lifecycle(lifecycle_id));
 
 create table Users (users_id int NOT NULL AUTO_INCREMENT,
 username varchar(30),
 email varchar(125),
-password varchar(300),
-UNIQUE(username),
+password varchar(100),
 UNIQUE(email),
 PRIMARY KEY (users_id));
 
-create table PlantData (plants_id int NOT NULL AUTO_INCREMENT,
+create table UCL (ucl_id int NOT NULL AUTO_INCREMENT,
 users_id int NOT NULL,
-presetData_id int NOT NULL,
-/*Not sure if code below this is needed*/
 culture_id int NOT NULL,
 lifecycle_id int NOT NULL,
-/*Not sure if code above this is needed*/
-creation_dateTime DATETIME,
-temp double,
-tempMin double,
-tempMax double,
-humidity int,
-humidityMin int,
-humidityMax int,
-pH double,
-pHMin double,
-pHMax double,
-moisture varchar(20),
-PRIMARY KEY (plants_id),
+PRIMARY KEY (ucl_id),
 FOREIGN KEY (culture_id) REFERENCES Culture(culture_id),
 FOREIGN KEY (lifecycle_id) REFERENCES Lifecycle(lifecycle_id),
-FOREIGN KEY (presetData_id) REFERENCES PresetData(presetData_id),
 FOREIGN KEY (users_id) REFERENCES Users(users_id)); 
+
+create table CropData (crops_id int NOT NULL AUTO_INCREMENT,
+ucl_id int NOT NULL,
+creation_dateTime DATETIME,
+temp double,
+humidity int,
+pH double,
+moisture varchar(20),
+PRIMARY KEY (crops_id),
+FOREIGN KEY (ucl_id) REFERENCES UCL(ucl_id)); 
+
+create table DataRanges (dataRanges_id int NOT NULL AUTO_INCREMENT,
+ucl_id int NOT NULL,
+creation_dateTime DATETIME,
+tempMin double,
+tempMax double,
+humidityMin int,
+humidityMax int,
+pHMin double,
+pHMax double,
+PRIMARY KEY (dataRanges_id),
+FOREIGN KEY (ucl_id) REFERENCES UCL(ucl_id));
 
 create table Notifications (notifications_id int NOT NULL AUTO_INCREMENT,
 description varchar(125),
@@ -70,87 +76,68 @@ FOREIGN KEY (notifications_id) REFERENCES Notifications(notifications_id),
 FOREIGN KEY (users_id) REFERENCES Users(users_id)); 
 
 /*Adding data into the tables*/
-INSERT INTO Culture VALUES ("C1", "Strawberry");
-INSERT INTO Culture VALUES ("C2", "Lettuce");
-INSERT INTO Culture VALUES ("C3", "Potato");
-INSERT INTO Culture VALUES ("C4", "Tomato");
+INSERT INTO Culture VALUES (1, "Strawberry");
+INSERT INTO Culture VALUES (2, "Lettuce");
+INSERT INTO Culture VALUES (3, "Potato");
+INSERT INTO Culture VALUES (4, "Tomato");
 
-INSERT INTO Lifecycle VALUES ("L1", "Sprout");
-INSERT INTO Lifecycle VALUES ("L2", "Seeding");
-INSERT INTO Lifecycle VALUES ("L3", "Vegetative");
-INSERT INTO Lifecycle VALUES ("L4", "Blooming");
-INSERT INTO Lifecycle VALUES ("L5", "Flowering");
-INSERT INTO Lifecycle VALUES ("L6", "Mature");
+INSERT INTO Lifecycle VALUES (1, "Sprout");
+INSERT INTO Lifecycle VALUES (2, "Seedling");
+INSERT INTO Lifecycle VALUES (3, "Vegetative");
+INSERT INTO Lifecycle VALUES (4, "Budding");
+INSERT INTO Lifecycle VALUES (5, "Flowering");
+INSERT INTO Lifecycle VALUES (6, "Ripening");
 
-INSERT INTO PresetData VALUES ("PD1", "C1", "L1", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD2", "C1", "L2", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD3", "C1", "L3", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD4", "C1", "L4", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD5", "C1", "L5", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD6", "C1", "L6", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD7", "C2", "L1", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD8", "C2", "L2", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD9", "C2", "L3", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD10", "C2", "L4", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD11", "C2", "L5", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD12", "C2", "L6", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD13", "C3", "L1", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD14", "C3", "L2", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD15", "C3", "L3", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD16", "C3", "L4", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD17", "C3", "L5", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD18", "C3", "L6", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD19", "C4", "L1", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD20", "C4", "L2", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD21", "C4", "L3", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD22", "C4", "L4", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD23", "C4", "L5", 15, 20, 45, 60, 6.0, 7.0);
-INSERT INTO PresetData VALUES ("PD24", "C4", "L6", 15, 20, 45, 60, 6.0, 7.0);
+INSERT INTO PresetData VALUES (1, 1, 1, 7, 15, 65, 75, 5.4, 6.5);
+INSERT INTO PresetData VALUES (2, 1, 2, 10, 20, 65, 75, 5.4, 6.5);
+INSERT INTO PresetData VALUES (3, 1, 3, 15, 20, 65, 75, 5.4, 6.5);
+INSERT INTO PresetData VALUES (4, 1, 4, 18, 21, 65, 75, 5.4, 6.5);
+INSERT INTO PresetData VALUES (5, 1, 5, 18, 25, 65, 75, 5.4, 6.5);
+INSERT INTO PresetData VALUES (6, 1, 6, 21, 25, 65, 75, 5.4, 6.5);
 
-INSERT INTO Users VALUES ("U1", "admin", "admin@admin.com", "123");
-INSERT INTO Users VALUES ("U2", "teomeo", "teomeo@gmail.com", "456");
-INSERT INTO Users VALUES ("U3", "shakira", "shakira@gmail.com", "abc");
-INSERT INTO Users VALUES ("U4", "vincent", "vincent@gmail.com", "def");
-INSERT INTO Users VALUES ("U5", "luana", "luana@gmail.com", "123abc");
+INSERT INTO Users VALUES (1, "admin", "admin@admin.com", "123");
+INSERT INTO Users VALUES (2, "teomeo", "teomeo@gmail.com", "456");
+INSERT INTO Users VALUES (3, "shakira", "shakira@gmail.com", "abc");
+INSERT INTO Users VALUES (4, "vincent", "vincent@gmail.com", "def");
+INSERT INTO Users VALUES (5, "luana", "luana@gmail.com", "123abc");
 
-INSERT INTO PlantData VALUES ("P1", "U1", "PD1", "C1", "L1",  "2022-11-08 15:00:00", 17, 62.6, 15, 20, 50, 45, 60, 6.5, 6.0, 7.0, "Wet");
-INSERT INTO PlantData VALUES ("P2", "U1", "PD1", "C1", "L1",  "2022-11-09 15:00:00", 18, 64.4, 15, 20, 50, 45, 60, 6.5, 6.0, 7.0, "Dry");
-INSERT INTO PlantData VALUES ("P3", "U1", "PD1", "C1", "L1",  "2022-11-10 15:00:00", 20, 68, 15, 20, 50, 45, 60, 6.5, 6.0, 7.0, "Wet");
-INSERT INTO PlantData VALUES ("P4", "U2", "PD4", "C1", "L4",  "2022-11-11 15:00:00", 15, 59, 15, 20, 50, 45, 60, 6.5, 6.0, 7.0, "Wet");
-INSERT INTO PlantData VALUES ("P5", "U1", "PD1", "C1", "L1",  "2022-11-11 15:00:00", 16, 60.8, 15, 20, 50, 45, 60, 6.5, 6.0, 7.0, "Wet");
-INSERT INTO PlantData VALUES ("P6", "U1", "PD1", "C1", "L1",  "2022-11-12 15:00:00", 17, 62.6, 15, 20, 50, 45, 60, 6.5, 6.0, 7.0, "Wet");
-INSERT INTO PlantData VALUES ("P7", "U1", "PD1", "C1", "L1",  "2022-11-13 15:00:00", 19, 66.2, 15, 20, 50, 45, 60, 6.5, 6.0, 7.0, "Wet");
-INSERT INTO PlantData VALUES ("P8", "U2", "PD4", "C1", "L4",  "2022-11-14 15:00:00", 15, 59, 15, 20, 50, 45, 60, 6.5, 6.0, 7.0, "Wet");
-INSERT INTO PlantData VALUES ("P9", "U1", "PD1", "C1", "L1",  "2022-11-14 15:00:00", 15, 59, 15, 20, 50, 45, 60, 6.5, 6.0, 7.0, "Wet");
+INSERT INTO UCL VALUES (1, 1, 1, 1);
+INSERT INTO UCL VALUES (2, 2, 3, 2);
+INSERT INTO UCL VALUES (3, 3, 1, 5);
+INSERT INTO UCL VALUES (4, 4, 4, 2);
 
-INSERT INTO Notifications VALUES ("N1", "Your plants needs watering", "warning1.png");
-INSERT INTO Notifications VALUES ("N2", "Your plant is too warm", "warning2.png");
-INSERT INTO Notifications VALUES ("N3", "Your plant needs more pH solution", "warning3.png");
-INSERT INTO Notifications VALUES ("N3", "Your plant is too cold", "warning4.png");
+INSERT INTO CropData VALUES (1, 1, "2022-11-08 15:00:00", 17, 50, 6.5, "Wet");
+INSERT INTO CropData VALUES (2, 1, "2022-11-09 15:00:00", 18, 75, 7.0, "Dry");
+INSERT INTO CropData VALUES (3, 1, "2022-11-10 15:00:00", 20, 68, 7.0, "Wet");
+INSERT INTO CropData VALUES (4, 1, "2022-11-11 15:00:00", 15, 79, 6.0, "Wet");
+INSERT INTO CropData VALUES (5, 1, "2022-11-11 15:00:00", 16, 60, 6.2, "Wet");
+INSERT INTO CropData VALUES (6, 1, "2022-11-12 15:00:00", 17, 72, 6.8, "Wet");
+INSERT INTO CropData VALUES (7, 1, "2022-11-13 15:00:00", 20, 66, 7.0, "Wet");
 
-INSERT INTO Users_Notifications VALUES ("N1", "U1", "2022-11-09 12:45:56");
-INSERT INTO Users_Notifications VALUES ("N1", "U2", "2022-11-09 12:45:56");
-INSERT INTO Users_Notifications VALUES ("N3", "U1", "2022-11-09 12:45:56");
-INSERT INTO Users_Notifications VALUES ("N1", "U4", "2022-11-09 12:45:56");
+INSERT INTO DataRanges VALUES (1, 1, "2022-11-12 15:00:00", 15, 20, 70, 80, 6.0, 7.0);
+
+INSERT INTO Notifications VALUES (1, "Your crop needs wateri21, 25, 65, 75, 5.4, 6.5);ng", "warning1.png");
+INSERT INTO Notifications VALUES (2, "Your crop is too warm", "warning2.png");
+INSERT INTO Notifications VALUES (3, "Your crop needs more pH solution", "warning3.png");
+INSERT INTO Notifications VALUES (4, "Your crop is too cold", "warning4.png");
+
+INSERT INTO Users_Notifications VALUES (1, 1, "2022-10-08 10:45:00");
+INSERT INTO Users_Notifications VALUES (1, 2, "2022-11-09 12:45:56");
+INSERT INTO Users_Notifications VALUES (1, 3, "2022-11-10 12:25:12");
+INSERT INTO Users_Notifications VALUES (1, 4, "2022-12-11 11:45:16");
 
 /*Deleting data older than 7 days*/
 SET GLOBAL event_scheduler = ON;
 
-Create Event del_plants_data on SCHEDULE every 1 Day do Delete from PlantData 
+Create Event del_crops_data on SCHEDULE every 1 Day do Delete from CropData 
 where datediff(Now(), creation_dateTime) > 7; 
 
-/*Creating indexes for each data gathered*/
-Create index Plant_pH_index On PlantData (pH, pHMin, pHMax);
-Create index Plant_humidity_index On PlantData (humidity, humidityMin, humidityMax); 
-Create index Plant_temp_index On PlantData (temp, tempMin, tempMax); 
-Create index Plant_moisture_index On PlantData (moisture); 
-
 /*Creating a view to find out which are under or over their min/max*/
-Create view Plants_Over_Under_Min_Max as Select u.users_id, u.username, p.plants_id, p.temp, p.tempMin, p.tempMax, p.humidity, p.humidityMin, p.humidityMax, p.pH, p.pHMin, p.pHMax 
-from PlantData p join Users u using (users_id) 
-where p.temp > p.tempMax or p.temp < p.tempMin or p.humidity> p. humidityMax or p. humidity < p. humidityMin or p. pH > p. pHMax or p. pH < p. pHMin; 
+Create view Crops_Over_Under_Min_Max as Select p.crops_id, p.temp, pd.tempMin, pd.tempMax, p.humidity, pd.humidityMin, pd.humidityMax, p.pH, pd.pHMin, pd.pHMax 
+from CropData p join UCL ucl using (ucl_id) join PresetData pd using(culture_id)
+where p.temp > pd.tempMax or p.temp < pd.tempMin or p.humidity> pd.humidityMax or p.humidity < pd.humidityMin or p.pH > pd.pHMax or p.pH < pd.pHMin; 
 
 /*Creating a view to find out which are equal their min/max*/
-Create view Plants_Equal_Min_Max as Select u.users_id, u.username, p.plants_id, p.temp, p.tempMin, p.tempMax, p.humidity, p.humidityMin, p.humidityMax, p.pH, p.pHMin, p.pHMax 
-from PlantData p join Users u using (users_id) 
-where p.temp = p.tempMax or p.temp = p.tempMin or p.humidity= p. humidityMax or p. humidity = p. humidityMin or p. pH = p. pHMax or p. pH = p. pHMin; 
+Create view Crops_Equal_Min_Max as Select p.crops_id, p.temp, pd.tempMin, pd.tempMax, p.humidity, pd.humidityMin, pd.humidityMax, p.pH, pd.pHMin, pd.pHMax 
+from CropData p join UCL ucl using (ucl_id) join PresetData pd using(culture_id)
+where p.temp = pd.tempMax or p.temp = pd.tempMin or p.humidity = pd.humidityMax or p.humidity = pd.humidityMin or p.pH = pd.pHMax or p.pH = pd.pHMin; 
