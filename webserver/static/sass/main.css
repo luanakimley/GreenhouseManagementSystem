@@ -56,4 +56,72 @@ h1, h2, h3, h4, h5, h6 {
   width: 155px;
 }
 
+.header {
+  width: 100vw;
+  background-color: #31453D;
+  padding: 25px;
+  color: #FEFAF5;
+  text-align: center;
+}
+.header h1 {
+  color: #FEFAF5;
+  text-align: center;
+  padding-bottom: 10px;
+}
+.header .material-icons {
+  display: inline-flex;
+  vertical-align: middle;
+}
+.header a {
+  text-decoration: none;
+  color: #FEFAF5;
+}
+
+.measurements {
+  margin: 30px;
+  font-size: xx-large;
+}
+.measurements .material-icons {
+  display: inline-flex;
+  vertical-align: middle;
+}
+.measurements .measurements-icon-title {
+  color: #61513C;
+  text-align: center;
+}
+.measurements .measurements-title {
+  font-family: "Quattrocento Sans", sans-serif;
+  font-weight: bold;
+}
+.measurements .measurements-box {
+  display: flex;
+  justify-content: space-evenly;
+  margin: 5px 0;
+  border: 3px solid #8db8a7;
+  border-radius: 25px;
+}
+.measurements .min-max-line {
+  background: linear-gradient(#8db8a7, #8db8a7) no-repeat center/3px 100%;
+}
+
+.float {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  bottom: 40px;
+  right: 40px;
+  background-color: #31453D;
+  color: #FEFAF5;
+  border-radius: 50px;
+  text-align: center;
+  box-shadow: 2px 2px 3px #999;
+}
+.float:hover {
+  color: #FEFAF5;
+}
+
+.my-float {
+  margin-top: 16px;
+}
+
 /*# sourceMappingURL=main.css.map */

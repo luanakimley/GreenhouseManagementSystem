@@ -38,7 +38,7 @@ def index():
     if len(user_culture_lifecycle) == 0:
         return redirect("/landing")
 
-    return render_template("monitoring.html")
+    return redirect("/monitoring")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -128,6 +128,20 @@ def culture_submit():
                    (session["users_id"], culture, 1))
     mysql.connection.commit()
     return redirect("/")
+
+
+@app.route("/monitoring")
+def monitoring():
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s)", [session["users_id"]])
+    mysql.connection.commit()
+    culture_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select * from Lifecycle")
+    lifecycle = cursor.fetchall()
+
+    return render_template("monitoring.html", culture_name=culture_name, lifecycles=lifecycle)
 
 
 if __name__ == '__main__':
