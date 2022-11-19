@@ -35,6 +35,8 @@ def index():
     cursor.execute("select * from UCL where users_id=%s", (users_id,))
     user_culture_lifecycle = cursor.fetchall()
 
+    session["UCL"] = user_culture_lifecycle[0][0]
+
     if len(user_culture_lifecycle) == 0:
         return redirect("/landing")
 
@@ -141,7 +143,17 @@ def monitoring():
     cursor.execute("select * from Lifecycle")
     lifecycle = cursor.fetchall()
 
-    return render_template("monitoring.html", culture_name=culture_name, lifecycles=lifecycle)
+    users_id = session["users_id"]
+    cursor = mysql.connection.cursor()
+    cursor.execute("select * from UCL where users_id=%s", (users_id,))
+    user_culture_lifecycle = cursor.fetchall()
+
+    session["UCL"] = user_culture_lifecycle
+
+    cursor.execute("select * from PresetData where culture_id=%s and lifecycle_id=%s", [session["UCL"][0][2], session["UCL"][0][3]])
+    preset_data = cursor.fetchall()
+
+    return render_template("monitoring.html", culture_name=culture_name, lifecycles=lifecycle, preset_data=preset_data)
 
 
 if __name__ == '__main__':
