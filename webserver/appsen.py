@@ -1,7 +1,9 @@
+# Imports
 from flask import Flask, redirect, render_template, request, session
 import json
 import RPi.GPIO as GPIO
-import time,threading
+import time, threading
+from datetime import datetime
 import adafruit_dht
 import board
 import busio
@@ -9,9 +11,7 @@ import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 from flask_session import Session
 from flask_mysqldb import MySQL
-from mysql import connector
-import mysql.connector as mysql
-from mysql.connector.errors import Error
+import MySQLdb
 from dotenv import load_dotenv
 import os
 from pubnub.callbacks import SubscribeCallback
@@ -19,71 +19,68 @@ from pubnub.enums import PNStatusCategory, PNOperationType
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub import PubNub
 
-#PubNub configuration
+load_dotenv()
+
+app = Flask(__name__)
+
+# PubNub configuration
 pnconfig = PNConfiguration()
-pnconfig.cipher_key = 'myCipherKey'
+# pnconfig.cipher_key = 'myCipherKey'
 pnconfig.subscribe_key = 'sub-c-5832596e-d4b6-4552-b2c0-a28a18fadd40'
 pnconfig.publish_key = 'pub-c-dab1a887-ba42-48aa-b99d-e42ecf3dedb3'
 pnconfig.user_id = "e6f98bfc-65f6-11ed-9022-0242ac120002"
 pubnub = PubNub(pnconfig)
 
 myChannel = "greenhouse"
-sensorList =["buzzer"]
-
-load_dotenv()
-
-app = Flask(__name__)
-
-#MYSQL Database connection
+sensorList = ["buzzer"]
+# MYSQL Database connection
 app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_USER'] = 'teomeo'
+app.config['MYSQL_PASSWORD'] = '12345678'
 app.config['MYSQL_DB'] = 'gms'
+
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
 Session(app)
 mysql = MySQL(app)
-
 # Setup motion sensor and buzzer pins output
-
 alive = 0
 data = {}
 PIR_pin = 23
 Buzzer_pin = 24
-
-#GPIO SETUP Motion detection and buzzer pins output
+# GPIO SETUP Motion detection and buzzer pins output
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(PIR_pin, GPIO.IN)
 GPIO.setup(Buzzer_pin, GPIO.OUT)
 
-#GPIO SETUP temperature and humidity pins output
+# GPIO SETUP temperature and humidity pins output
 tmp_sensor = adafruit_dht.DHT11(board.D17)
 moist_pin = 21
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(moist_pin, GPIO.IN)
 
-#Setup The Ph sensor pins output
+# Setup The Ph sensor pins output
 i2c = busio.I2C(board.SCL, board.SDA)
 ads = ADS.ADS1115(i2c)
 channel = AnalogIn(ads, ADS.P0)  # Use channel 0 to measure the voltage
 
-#SETUP pins for pump1
+# SETUP pins for pump1
 in1_p1 = 10
 in2_p1 = 9
-en1_p1 = 25
+en_p1 = 25
 temp1 = 1
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(in1_p1, GPIO.OUT)
 GPIO.setup(in2_p1, GPIO.OUT)
-GPIO.setup(en1_p1, GPIO.OUT)
+GPIO.setup(en_p1, GPIO.OUT)
 GPIO.output(in1_p1, GPIO.LOW)
 GPIO.output(in2_p1, GPIO.LOW)
-p = GPIO.PWM(en1_p1, 1000)
+p = GPIO.PWM(en_p1, 1000)
 
-#SETUP pins for pump2
+# SETUP pins for pump2
 in1_p2 = 5
 in2_p2 = 6
 en_p2 = 26
@@ -92,14 +89,15 @@ temp1 = 1
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(in1_p2, GPIO.OUT)
 GPIO.setup(in2_p2, GPIO.OUT)
-GPIO.setup(en1_p2, GPIO.OUT)
+GPIO.setup(en_p2, GPIO.OUT)
 GPIO.output(in1_p2, GPIO.LOW)
 GPIO.output(in2_p2, GPIO.LOW)
-p = GPIO.PWM(en1_p2, 1000)
+p = GPIO.PWM(en_p2, 1000)
 
 p.start(100)
 
-def read_ph(): #Function to read the Ph value
+
+def read_ph():  # Function to read the Ph value
     while True:
         buf = list()
 
@@ -111,43 +109,51 @@ def read_ph(): #Function to read the Ph value
 
         ph_val = (-7.119047 * avg) + (29.14023)  # Calculate the Ph value from the given voltage
 
-        #print("avg V: ", round(avg, 2))
+        # print("avg V: ", round(avg, 2))
         print("Ph Buf: ", round(ph_val, 2))
-        print()
+        publish(myChannel, {"Ph": ph_val})
         time.sleep(2)
 
-        #TODO if the ph is under value run the pump1
+        # TODO if the ph is under value run the pump1
         # if ph_val < 4: # if the Ph is less than 7 run the pump1
         #     if (temp1 == 1):
         #         GPIO.output(in1_p1, GPIO.HIGH)
         #         GPIO.output(in2_p1, GPIO.LOW)
         #         print("forward")
         #         time.sleep(5)
-        #TODO if the ph is abovr value run the pump2
+        # TODO if the ph is abovr value run the pump2
         # if ph_val > 7: # if the Ph is more than 7 run the pump2
         #     if (temp1 == 1):
         #         GPIO.output(in1_2, GPIO.HIGH)
         #         GPIO.output(in2_2, GPIO.LOW)
         #         print("forward")
-        # 
+        #
 
-def read_temp():# Function to read the temperature and humidity
+
+def read_temp():  # Function to read the temperature and humidity
     while True:
         try:
-            #Detecting the moisture from the soil
+            # Detecting the moisture from the soil
             if GPIO.input(moist_pin):
-                value = "Dry Soil"
+                value = "Dry"
                 print("The soil is dry!")
+                publish(myChannel, {"Soil is": value})
             else:
-                value = "Wet Soil"
+                value = "Wet"
                 print("The soil is wet!")
+                publish(myChannel, {"Soil is": value})
 
-            #Temperature and humidity data
+            # Temperature and humidity data
             temp = tmp_sensor.temperature
             temp_f = temp * (9 / 5) + 32
             humidity = tmp_sensor.humidity
             print("Temp: {:.1f} C / {:.1f} F    Humidity: {}% ".format(temp, temp_f, humidity))
+            publish(myChannel, {"temp": temp})
+            publish(myChannel, {"hum": humidity})
 
+            # today = datetime.now().round()
+            # print(today)
+            # return temp
         except RuntimeError as error:
             print(error.args[0])
             time.sleep(2.0)
@@ -156,16 +162,18 @@ def read_temp():# Function to read the temperature and humidity
             tmp_sensor.exit()
             raise error
         time.sleep(2)
-        #TODO Fix Database connection
-        #try:
-            #cursor = mysql.connection.cursor()
-            # cursor = mysql.connector.connect()
-            # cursor.execute("insert into plantdata(creation_dateTime, temp,humidity,ph,moisture) values (%s, %s, %s, %s, %s, %s)",
-            #                  time.strfrime('%Y-%m-%d %H:%M:%S '), temp, humidity, 5.5, value)
-            # mysql.connection.commit()
-            # cursor.close()
-        #except mysql.connector.Error as err:
-           # print("Something went wrong: {}".format(err))
+
+        # TODO Fix Database connection
+        # try:
+        # cursor = mysql.connection.cursor()
+        # cursor = mysql.connector.connect()
+        # cursor.execute("insert into plantdata(creation_dateTime, temp,humidity,ph,moisture) values (%s, %s, %s, %s, %s, %s)",
+        #                  time.strfrime('%Y-%m-%d %H:%M:%S '), temp, humidity, 5.5, value)
+        # mysql.connection.commit()
+        # cursor.close()
+        # except mysql.connector.Error as err:
+        # print("Something went wrong: {}".format(err))
+
 
 def beep(repeat):
     for i in range(0, repeat):
@@ -176,29 +184,31 @@ def beep(repeat):
             time.sleep(0.001)
         time.sleep(0.02)
 
+
 def motion_detection():
     data["alarm"] = False
     print("sensors started")
     trigger = False
     while True:
-        if(GPIO.input(PIR_pin)):
+        if (GPIO.input(PIR_pin)):
             print("Motion detected!")
             beep(4)
             trigger = True
             publish(myChannel, {"motion": "Yes"})
-            time.sleep(1)        
+            time.sleep(1)
             data["motion"] = 1
         elif trigger:
-            publish(myChannel, {"motion" : "No"})
+            publish(myChannel, {"motion": "No"})
             trigger = False
         if data["alarm"]:
             beep(2)
             print("Turning on the buzzer from index.html")
         time.sleep(2)
-        
-#PubNub functions
-def publish(channel, msg):
-    pubnub.publish().channel(channel).message(msg).pn_async(my_publish_callback)
+
+
+# PubNub functions
+def publish(custom_channel, msg):
+    pubnub.publish().channel(custom_channel).message(msg).pn_async(my_publish_callback)
 
 def my_publish_callback(envelope, status):
     # Check whether request successfully completed or not
@@ -237,12 +247,13 @@ class MySubscribeCallback(SubscribeCallback):
             print(message.message)
             msg = message.message
             key = list(msg.keys())
-            if key[0] == "event":    #{"event":{"sensor_name" : True}
+            if key[0] == "event":  # {"event":{"sensor_name" : True}
                 self.handleEvent(msg)
         except Exception as e:
             print("Received: ", message.message)
             print(e)
             pass
+
     def handleEvent(self, msg):
         global data
         eventData = msg("event")
@@ -254,10 +265,22 @@ class MySubscribeCallback(SubscribeCallback):
             elif eventData[key[0]] is False:
                 data["alarm"] = False
 
-#Routes for flask app
+# Routes for flask app
 @app.route("/")
 def index():
+    # temp = read_temp()
+    # print("the temp isRoute:", temp)
+    #today = datetime.now()
+    # print("dnes e:",today)
+    # cursor = mysql.connection.cursor()
+    # cursor.execute(
+    #     "insert into plantdata(creation_dateTime, temp,humidity,ph,moisture) values (%s, %s, %s, %s, %s, %s)",
+    #     #today.strfrime('%Y-%m-%d %H:%M:%S'), temp, 50, 5.5, 'wet')
+    #     today, temp, 50, 5.5, 'wet')
+    # mysql.connection.commit()
+
     return render_template("index.html")
+
 
 @app.route("/keep_alive")
 def keep_alive():
@@ -280,20 +303,21 @@ def event(name, action):
         elif action == "OFF":
             data["alarm"] = False
     return str("OK")
-            
+
 
 if __name__ == '__main__':
-
+    # temp = read_temp()
+    # print("temp is_Main: ",temp)
     sensors_thread_1 = threading.Thread(target=motion_detection)
     sensors_thread_1.start()
-    # sensors_thread_2 = threading.Thread(target=read_temp)
-    # sensors_thread_2.start()
-    # sensors_thread_3 = threading.Thread(target=read_ph)
-    # sensors_thread_3.start()
+    sensors_thread_2 = threading.Thread(target=read_temp)
+    sensors_thread_2.start()
+    sensors_thread_3 = threading.Thread(target=read_ph)
+    sensors_thread_3.start()
 
     pubnub.add_listener(MySubscribeCallback())
     pubnub.subscribe().channels(myChannel).execute()
-    #Run all the thread one after another
+    # Run all the thread one after another
     # sensors_thread_1.join()
     # sensors_thread_2.join()
     # sensors_thread_3.join()
