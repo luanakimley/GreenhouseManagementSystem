@@ -214,5 +214,35 @@ def reset_default_temp():
     return redirect("/edit_temp")
 
 
+@app.route("/edit_humidity")
+def edit_humidity():
+    cursor = mysql.connection.cursor()
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s)",
+                   [session["users_id"]])
+    mysql.connection.commit()
+    culture_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
+    lifecycle_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select humidityMin, humidityMax from DataRanges where ucl_id=%s", [session["UCL"][0][0]])
+    humidity_range = cursor.fetchall()
+
+    return render_template("edit_humidity.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
+                           humidity_range=humidity_range)
+
+
+@app.route("/edit_humidity_action", methods=["POST"])
+def edit_humidity_action():
+    humidity_min = request.form.get("humidityMin")
+    humidity_max = request.form.get("humidityMax")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute('''update DataRanges set humidityMin=%s, humidityMax=%s where ucl_id=%s''', (humidity_min, humidity_max, session["UCL"][0][0]))
+    mysql.connection.commit()
+
+    return redirect("/monitoring")
+
+
 if __name__ == '__main__':
     app.run()
