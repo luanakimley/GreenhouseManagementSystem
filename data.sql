@@ -88,12 +88,18 @@ INSERT INTO Lifecycle VALUES (4, "Budding");
 INSERT INTO Lifecycle VALUES (5, "Flowering");
 INSERT INTO Lifecycle VALUES (6, "Ripening");
 
-INSERT INTO PresetData VALUES (1, 1, 1, 7, 15, 65, 75, 5.4, 6.5);
+INSERT INTO PresetData VALUES (1, 1, 1, 10, 26, 65, 75, 5.8, 6.2);
+INSERT INTO PresetData VALUES (1, 1, 2, 10, 26, 65, 75, 5.8, 6.2);
+INSERT INTO PresetData VALUES (1, 1, 3, 10, 26, 65, 75, 5.8, 6.2);
+INSERT INTO PresetData VALUES (1, 1, 4, 15, 26, 65, 75, 5.8, 6.2);
+INSERT INTO PresetData VALUES (1, 1, 5, 15, 26, 65, 75, 5.8, 6.2);
+INSERT INTO PresetData VALUES (1, 1, 6, 15, 26, 65, 75, 5.8, 6.2);
 INSERT INTO PresetData VALUES (2, 1, 2, 10, 20, 65, 75, 5.4, 6.5);
 INSERT INTO PresetData VALUES (3, 1, 3, 15, 20, 65, 75, 5.4, 6.5);
 INSERT INTO PresetData VALUES (4, 1, 4, 18, 21, 65, 75, 5.4, 6.5);
 INSERT INTO PresetData VALUES (5, 1, 5, 18, 25, 65, 75, 5.4, 6.5);
 INSERT INTO PresetData VALUES (6, 1, 6, 21, 25, 65, 75, 5.4, 6.5);
+
 
 INSERT INTO Users VALUES (1, "admin", "admin@admin.com", "123");
 INSERT INTO Users VALUES (2, "teomeo", "teomeo@gmail.com", "456");
