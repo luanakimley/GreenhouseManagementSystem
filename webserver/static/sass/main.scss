@@ -37,6 +37,14 @@ h1, h2, h3, h4, h5, h6 {
 
 }
 
+.btn-link {
+    color: $green;
+
+    &:hover, &:active, &:focus {
+        color: $green;
+    }
+}
+
 .btn-secondary {
     background-color: $green;
     color: white;
@@ -64,6 +72,14 @@ h1, h2, h3, h4, h5, h6 {
 
     &:hover {
         color: $green;
+    }
+}
+
+.back-button-edit {
+    color: $off-white;
+
+    &:hover {
+        color: $off-white;
     }
 }
 
@@ -146,4 +162,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .my-float{
 	margin-top: 16px;
+}
+
+.range-form-title {
+    color: $brown;
+    font-weight: bold;
 }

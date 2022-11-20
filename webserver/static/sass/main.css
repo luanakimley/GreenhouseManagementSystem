@@ -25,6 +25,13 @@ h1, h2, h3, h4, h5, h6 {
   color: white;
 }
 
+.btn-link {
+  color: #31453D;
+}
+.btn-link:hover, .btn-link:active, .btn-link:focus {
+  color: #31453D;
+}
+
 .btn-secondary {
   background-color: #31453D;
   color: white;
@@ -50,6 +57,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 .back-button:hover {
   color: #31453D;
+}
+
+.back-button-edit {
+  color: #FEFAF5;
+}
+.back-button-edit:hover {
+  color: #FEFAF5;
 }
 
 .logo {
@@ -122,6 +136,11 @@ h1, h2, h3, h4, h5, h6 {
 
 .my-float {
   margin-top: 16px;
+}
+
+.range-form-title {
+  color: #61513C;
+  font-weight: bold;
 }
 
 /*# sourceMappingURL=main.css.map */
