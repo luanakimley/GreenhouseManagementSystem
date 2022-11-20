@@ -244,5 +244,17 @@ def edit_humidity_action():
     return redirect("/monitoring")
 
 
+@app.route("/reset_default_humidity")
+def reset_default_humidity():
+    cursor = mysql.connection.cursor()
+    cursor.execute("select humidityMin, humidityMax from PresetData where culture_id=%s and lifecycle_id=%s", [session["UCL"][0][2], session["UCL"][0][3]])
+    default_humidity = cursor.fetchall()
+    cursor.execute('''update DataRanges set humidityMin=%s, humidityMax=%s where ucl_id=%s''',
+                   (default_humidity[0][0], default_humidity[0][1], session["UCL"][0][0]))
+    mysql.connection.commit()
+
+    return redirect("/edit_humidity")
+
+
 if __name__ == '__main__':
     app.run()
