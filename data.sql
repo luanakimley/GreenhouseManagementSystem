@@ -80,6 +80,7 @@ INSERT INTO Culture VALUES (1, "Strawberry");
 INSERT INTO Culture VALUES (2, "Lettuce");
 INSERT INTO Culture VALUES (3, "Potato");
 INSERT INTO Culture VALUES (4, "Tomato");
+INSERT INTO Culture VALUES (5, "Spinach");
 
 INSERT INTO Lifecycle VALUES (1, "Sprout");
 INSERT INTO Lifecycle VALUES (2, "Seedling");
@@ -121,8 +122,8 @@ INSERT INTO PresetData VALUES (25, 5, 1, -6, 15.5, 40, 70, 6.0, 7.5);
 INSERT INTO PresetData VALUES (26, 5, 2, -6, 15.5, 40, 70, 6.0, 7.5);
 INSERT INTO PresetData VALUES (27, 5, 3, 10, 15.5, 40, 70, 6.0, 7.5);
 INSERT INTO PresetData VALUES (28, 5, 4, 10, 15.5, 40, 70, 6.0, 7.5);
-INSERT INTO PresetData VALUES (25, 5, 5, 10, 15.5, 40, 70, 6.0, 7.5);
-INSERT INTO PresetData VALUES (25, 5, 6, 10, 15.5, 40, 70, 6.0, 7.5);
+INSERT INTO PresetData VALUES (29, 5, 5, 10, 15.5, 40, 70, 6.0, 7.5);
+INSERT INTO PresetData VALUES (30, 5, 6, 10, 15.5, 40, 70, 6.0, 7.5);
 
 INSERT INTO Users VALUES (1, "admin", "admin@admin.com", "123");
 INSERT INTO Users VALUES (2, "teomeo", "teomeo@gmail.com", "456");
