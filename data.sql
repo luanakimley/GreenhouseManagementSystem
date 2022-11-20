@@ -117,8 +117,13 @@ INSERT INTO PresetData VALUES (22, 1, 4, 14, 29, 65, 85, 5.5, 7.5);
 INSERT INTO PresetData VALUES (23, 1, 5, 14, 29, 65, 85, 5.5, 7.5);
 INSERT INTO PresetData VALUES (24, 1, 6, 14, 29, 65, 85, 5.5, 7.5);
 
-INSERT INTO PresetData VALUES (5, 1, 5, 18, 25, 65, 75, 5.4, 6.5);
-INSERT
+INSERT INTO PresetData VALUES (25, 1, 1, -6, 15.5, 40, 70, 6.0, 7.5);
+INSERT INTO PresetData VALUES (26, 1, 2, -6, 15.5, 40, 70, 6.0, 7.5);
+INSERT INTO PresetData VALUES (27, 1, 3, 10, 15.5, 40, 70, 6.0, 7.5);
+INSERT INTO PresetData VALUES (28, 1, 4, 10, 15.5, 40, 70, 6.0, 7.5);
+INSERT INTO PresetData VALUES (25, 1, 5, 10, 15.5, 40, 70, 6.0, 7.5);
+INSERT INTO PresetData VALUES (25, 1, 6, 10, 15.5, 40, 70, 6.0, 7.5);
+
 INSERT INTO Users VALUES (1, "admin", "admin@admin.com", "123");
 INSERT INTO Users VALUES (2, "teomeo", "teomeo@gmail.com", "456");
 INSERT INTO Users VALUES (3, "shakira", "shakira@gmail.com", "abc");
