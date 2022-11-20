@@ -256,5 +256,47 @@ def reset_default_humidity():
     return redirect("/edit_humidity")
 
 
+@app.route("/edit_ph")
+def edit_ph():
+    cursor = mysql.connection.cursor()
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s)",
+                   [session["users_id"]])
+    mysql.connection.commit()
+    culture_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
+    lifecycle_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select pHMin, pHMax from DataRanges where ucl_id=%s", [session["UCL"][0][0]])
+    ph_range = cursor.fetchall()
+
+    return render_template("edit_ph.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
+                           ph_range=ph_range)
+
+
+@app.route("/edit_ph_action", methods=["POST"])
+def edit_ph_action():
+    ph_min = request.form.get("pHMin")
+    ph_max = request.form.get("pHMax")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute('''update DataRanges set pHMin=%s, pHMax=%s where ucl_id=%s''', (ph_min, ph_max, session["UCL"][0][0]))
+    mysql.connection.commit()
+
+    return redirect("/monitoring")
+
+
+@app.route("/reset_default_ph")
+def reset_default_ph():
+    cursor = mysql.connection.cursor()
+    cursor.execute("select pHMin, pHMax from PresetData where culture_id=%s and lifecycle_id=%s", [session["UCL"][0][2], session["UCL"][0][3]])
+    default_ph = cursor.fetchall()
+    cursor.execute('''update DataRanges set pHMin=%s, pHMax=%s where ucl_id=%s''',
+                   (default_ph[0][0], default_ph[0][1], session["UCL"][0][0]))
+    mysql.connection.commit()
+
+    return redirect("/edit_ph")
+
+
 if __name__ == '__main__':
     app.run()
