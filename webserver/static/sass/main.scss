@@ -9,13 +9,12 @@ $heading-font: 'Playfair Display', serif;
 $body-font: 'Quattrocento Sans', sans-serif;
 
 html {
-    height: 100%;
+    scroll-padding-top: 100px;
 }
 
 body {
     background-color: $off-white;
     font-family: $body-font;
-    height: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -87,10 +86,14 @@ h1, h2, h3, h4, h5, h6 {
     width: 155px;
 }
 
+.menu {
+}
+
 .header {
     width: 100vw;
     background-color: $green;
     padding: 25px;
+    margin-bottom: 0;
     color: $off-white;
     text-align: center;
 
