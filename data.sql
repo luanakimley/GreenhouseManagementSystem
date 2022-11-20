@@ -103,26 +103,26 @@ INSERT INTO PresetData VALUES (11, 2, 5, 10, 21, 50, 75, 6.0, 7.0);
 INSERT INTO PresetData VALUES (12, 2, 6, 10, 21, 50, 75, 6.0, 7.0);
 
 
-INSERT INTO PresetData VALUES (13, 1, 1, 7, 10, 50, 85, 5.8, 6.5);
-INSERT INTO PresetData VALUES (14, 1, 2, 16, 21, 50, 85, 5.8, 6.5);
-INSERT INTO PresetData VALUES (15, 1, 3, 16, 21, 50, 85, 5.8, 6.5);
-INSERT INTO PresetData VALUES (16, 1, 4, 16, 21, 50, 85, 5.8, 6.5);
-INSERT INTO PresetData VALUES (17, 1, 5, 16, 21, 50, 85, 5.8, 6.5);
-INSERT INTO PresetData VALUES (18, 1, 6, 16, 21, 50, 85, 5.8, 6.5);
+INSERT INTO PresetData VALUES (13, 3, 1, 7, 10, 50, 85, 5.8, 6.5);
+INSERT INTO PresetData VALUES (14, 3, 2, 16, 21, 50, 85, 5.8, 6.5);
+INSERT INTO PresetData VALUES (15, 3, 3, 16, 21, 50, 85, 5.8, 6.5);
+INSERT INTO PresetData VALUES (16, 3, 4, 16, 21, 50, 85, 5.8, 6.5);
+INSERT INTO PresetData VALUES (17, 3, 5, 16, 21, 50, 85, 5.8, 6.5);
+INSERT INTO PresetData VALUES (18, 3, 6, 16, 21, 50, 85, 5.8, 6.5);
 
-INSERT INTO PresetData VALUES (19, 1, 1, 21, 27, 65, 85, 5.5, 7.5);
-INSERT INTO PresetData VALUES (20, 1, 2, 14, 18, 65, 85, 5.5, 7.5);
-INSERT INTO PresetData VALUES (21, 1, 3, 14, 29, 65, 85, 5.5, 7.5);
-INSERT INTO PresetData VALUES (22, 1, 4, 14, 29, 65, 85, 5.5, 7.5);
-INSERT INTO PresetData VALUES (23, 1, 5, 14, 29, 65, 85, 5.5, 7.5);
-INSERT INTO PresetData VALUES (24, 1, 6, 14, 29, 65, 85, 5.5, 7.5);
+INSERT INTO PresetData VALUES (19, 4, 1, 21, 27, 65, 85, 5.5, 7.5);
+INSERT INTO PresetData VALUES (20, 4, 2, 14, 18, 65, 85, 5.5, 7.5);
+INSERT INTO PresetData VALUES (21, 4, 3, 14, 29, 65, 85, 5.5, 7.5);
+INSERT INTO PresetData VALUES (22, 4, 4, 14, 29, 65, 85, 5.5, 7.5);
+INSERT INTO PresetData VALUES (23, 4, 5, 14, 29, 65, 85, 5.5, 7.5);
+INSERT INTO PresetData VALUES (24, 4, 6, 14, 29, 65, 85, 5.5, 7.5);
 
-INSERT INTO PresetData VALUES (25, 1, 1, -6, 15.5, 40, 70, 6.0, 7.5);
-INSERT INTO PresetData VALUES (26, 1, 2, -6, 15.5, 40, 70, 6.0, 7.5);
-INSERT INTO PresetData VALUES (27, 1, 3, 10, 15.5, 40, 70, 6.0, 7.5);
-INSERT INTO PresetData VALUES (28, 1, 4, 10, 15.5, 40, 70, 6.0, 7.5);
-INSERT INTO PresetData VALUES (25, 1, 5, 10, 15.5, 40, 70, 6.0, 7.5);
-INSERT INTO PresetData VALUES (25, 1, 6, 10, 15.5, 40, 70, 6.0, 7.5);
+INSERT INTO PresetData VALUES (25, 5, 1, -6, 15.5, 40, 70, 6.0, 7.5);
+INSERT INTO PresetData VALUES (26, 5, 2, -6, 15.5, 40, 70, 6.0, 7.5);
+INSERT INTO PresetData VALUES (27, 5, 3, 10, 15.5, 40, 70, 6.0, 7.5);
+INSERT INTO PresetData VALUES (28, 5, 4, 10, 15.5, 40, 70, 6.0, 7.5);
+INSERT INTO PresetData VALUES (25, 5, 5, 10, 15.5, 40, 70, 6.0, 7.5);
+INSERT INTO PresetData VALUES (25, 5, 6, 10, 15.5, 40, 70, 6.0, 7.5);
 
 INSERT INTO Users VALUES (1, "admin", "admin@admin.com", "123");
 INSERT INTO Users VALUES (2, "teomeo", "teomeo@gmail.com", "456");
