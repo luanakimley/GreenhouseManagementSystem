@@ -57,10 +57,16 @@ def login_action():
         password = user_data[0][3]
 
         salt = os.getenv('SALT').encode()
-        if bcrypt.hashpw(user_password.encode('utf-8'), salt) == password.encode('utf-8'):
+        if email.lower() == user_data[0][2] and bcrypt.hashpw(user_password.encode('utf-8'), salt) == password.encode('utf-8'):
             session["users_id"] = user_data[0][0]
             session["username"] = user_data[0][1]
             session["email"] = user_data[0][2]
+
+            cursor = mysql.connection.cursor()
+            cursor.execute("select * from UCL where users_id=%s", (user_data[0][0],))
+            user_culture_lifecycle = cursor.fetchall()
+
+            session["UCL"] = user_culture_lifecycle
             return redirect("/")
         else:
             return redirect("/login")
@@ -106,6 +112,8 @@ def register():
 def logout():
     session["username"] = None
     session["email"] = None
+    session["users_id"] = None
+    session["UCL"] = None
     return redirect("/")
 
 
