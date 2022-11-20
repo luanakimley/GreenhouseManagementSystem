@@ -110,8 +110,12 @@ INSERT INTO PresetData VALUES (16, 1, 4, 16, 21, 50, 85, 5.8, 6.5);
 INSERT INTO PresetData VALUES (17, 1, 5, 16, 21, 50, 85, 5.8, 6.5);
 INSERT INTO PresetData VALUES (18, 1, 6, 16, 21, 50, 85, 5.8, 6.5);
 
-INSERT INTO PresetData VALUES (4, 1, 1, 18, 21, 65, 75, 5.4, 6.5);
-INSERT INTO PresetData VALUES (4, 1, 4, 18, 21, 65, 75, 5.4, 6.5);
+INSERT INTO PresetData VALUES (19, 1, 1, 21, 27, 65, 85, 5.5, 7.5);
+INSERT INTO PresetData VALUES (20, 1, 2, 14, 18, 65, 85, 5.5, 7.5);
+INSERT INTO PresetData VALUES (20, 1, 3, 14, 29, 65, 85, 5.5, 7.5);
+INSERT INTO PresetData VALUES (20, 1, 4, 14, 29, 65, 85, 5.5, 7.5);
+INSERT INTO PresetData VALUES (20, 1, 5, 14, 29, 65, 85, 5.5, 7.5);
+INSERT INTO PresetData VALUES (20, 1, 6, 14, 29, 65, 85, 5.5, 7.5);
 
 INSERT INTO PresetData VALUES (5, 1, 5, 18, 25, 65, 75, 5.4, 6.5);
 INSERT INTO PresetData VALUES (6, 1, 6, 21, 25, 65, 75, 5.4, 6.5);
