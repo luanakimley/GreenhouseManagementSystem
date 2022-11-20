@@ -89,28 +89,30 @@ INSERT INTO Lifecycle VALUES (5, "Flowering");
 INSERT INTO Lifecycle VALUES (6, "Ripening");
 
 INSERT INTO PresetData VALUES (1, 1, 1, 10, 26, 65, 75, 5.8, 6.2);
-INSERT INTO PresetData VALUES (1, 1, 2, 10, 26, 65, 75, 5.8, 6.2);
-INSERT INTO PresetData VALUES (1, 1, 3, 10, 26, 65, 75, 5.8, 6.2);
-INSERT INTO PresetData VALUES (1, 1, 4, 15, 26, 65, 75, 5.8, 6.2);
-INSERT INTO PresetData VALUES (1, 1, 5, 15, 26, 65, 75, 5.8, 6.2);
-INSERT INTO PresetData VALUES (1, 1, 6, 15, 26, 65, 75, 5.8, 6.2);
+INSERT INTO PresetData VALUES (2, 1, 2, 10, 26, 65, 75, 5.8, 6.2);
+INSERT INTO PresetData VALUES (3, 1, 3, 10, 26, 65, 75, 5.8, 6.2);
+INSERT INTO PresetData VALUES (4, 1, 4, 15, 26, 65, 75, 5.8, 6.2);
+INSERT INTO PresetData VALUES (5, 1, 5, 15, 26, 65, 75, 5.8, 6.2);
+INSERT INTO PresetData VALUES (6, 1, 6, 15, 26, 65, 75, 5.8, 6.2);
 
-INSERT INTO PresetData VALUES (2, 1, 1, 10, 21, 50, 75, 6.0, 7.0);
-INSERT INTO PresetData VALUES (2, 1, 2, 10, 21, 50, 75, 6.0, 7.0);
-INSERT INTO PresetData VALUES (2, 1, 3, 10, 21, 50, 75, 6.0, 7.0);
-INSERT INTO PresetData VALUES (2, 1, 4, 10, 21, 50, 75, 6.0, 7.0);
-INSERT INTO PresetData VALUES (2, 1, 5, 10, 21, 50, 75, 6.0, 7.0);
-INSERT INTO PresetData VALUES (2, 1, 6, 10, 21, 50, 75, 6.0, 7.0);
+INSERT INTO PresetData VALUES (7, 2, 1, 10, 21, 50, 75, 6.0, 7.0);
+INSERT INTO PresetData VALUES (8, 2, 2, 10, 21, 50, 75, 6.0, 7.0);
+INSERT INTO PresetData VALUES (9, 2, 3, 10, 21, 50, 75, 6.0, 7.0);
+INSERT INTO PresetData VALUES (10, 2, 4, 10, 21, 50, 75, 6.0, 7.0);
+INSERT INTO PresetData VALUES (11, 2, 5, 10, 21, 50, 75, 6.0, 7.0);
+INSERT INTO PresetData VALUES (12, 2, 6, 10, 21, 50, 75, 6.0, 7.0);
 
 
-INSERT INTO PresetData VALUES (3, 1, 1, 7, 10, 50, 85, 5.8, 6.5);
-INSERT INTO PresetData VALUES (3, 1, 2, 16, 21, 50, 85, 5.8, 6.5);
-INSERT INTO PresetData VALUES (3, 1, 2, 16, 21, 50, 85, 5.8, 6.5);
-INSERT INTO PresetData VALUES (3, 1, 2, 16, 21, 50, 85, 5.8, 6.5);
-INSERT INTO PresetData VALUES (3, 1, 2, 16, 21, 50, 85, 5.8, 6.5);
-INSERT INTO PresetData VALUES (3, 1, 2, 16, 21, 50, 85, 5.8, 6.5);
+INSERT INTO PresetData VALUES (13, 1, 1, 7, 10, 50, 85, 5.8, 6.5);
+INSERT INTO PresetData VALUES (14, 1, 2, 16, 21, 50, 85, 5.8, 6.5);
+INSERT INTO PresetData VALUES (15, 1, 3, 16, 21, 50, 85, 5.8, 6.5);
+INSERT INTO PresetData VALUES (16, 1, 4, 16, 21, 50, 85, 5.8, 6.5);
+INSERT INTO PresetData VALUES (17, 1, 5, 16, 21, 50, 85, 5.8, 6.5);
+INSERT INTO PresetData VALUES (18, 1, 6, 16, 21, 50, 85, 5.8, 6.5);
 
+INSERT INTO PresetData VALUES (4, 1, 1, 18, 21, 65, 75, 5.4, 6.5);
 INSERT INTO PresetData VALUES (4, 1, 4, 18, 21, 65, 75, 5.4, 6.5);
+
 INSERT INTO PresetData VALUES (5, 1, 5, 18, 25, 65, 75, 5.4, 6.5);
 INSERT INTO PresetData VALUES (6, 1, 6, 21, 25, 65, 75, 5.4, 6.5);
 
