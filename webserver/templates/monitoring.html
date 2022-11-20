@@ -11,32 +11,31 @@
             {% endfor %}
         </select>
     </span>
-    <hr>
-    <div class="mt-4">
-        <a href="#temperature">
-            <span class="material-icons material-symbols-outlined">device_thermostat</span>
-            Temperature
-        </a>&nbsp;&nbsp;|&nbsp;&nbsp;
-        <a href="#humidity">
-            <span class="material-icons material-symbols-outlined">humidity_percentage</span>
-            Humidity
-        </a>&nbsp;&nbsp;|&nbsp;&nbsp;
-        <a href="#pHlevel">
-            <span class="material-icons material-symbols-outlined">water_ph</span>
-            pH Level
-        </a>&nbsp;&nbsp;|&nbsp;&nbsp;
-        <a href="#moisture">
-            <span class="material-icons material-symbols-outlined">water</span>
-            Moisture
-        </a>
-    </div>
+</div>
+<div class="header mt-0 sticky-top menu">
+    <a href="#temperature">
+        <span class="material-icons material-symbols-outlined">device_thermostat</span>
+        Temperature
+    </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="#humidity">
+        <span class="material-icons material-symbols-outlined">humidity_percentage</span>
+        Humidity
+    </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="#pHlevel">
+        <span class="material-icons material-symbols-outlined">water_ph</span>
+        pH Level
+    </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="#moisture">
+        <span class="material-icons material-symbols-outlined">water</span>
+        Moisture
+    </a>
 </div>
 <div class="measurements" id="temperature">
     <div class="measurements-icon-title">
         <span class="material-icons material-symbols-outlined">device_thermostat</span>
         <span class="measurements-title">Temperature</span>
     </div>
-    <div class="container px-5 mt-4">
+    <div class="container px-5 my-4">
       <div class="row gx-4">
         <div class="col">
             <p class="h5 text-center m-3">Current</p>
@@ -65,6 +64,9 @@
         </div>
       </div>
     </div>
+    <div class="text-center">
+        <a href="/edit_temp" class="btn btn-secondary my-4">Set Preset Range</a>
+    </div>
 </div>
 <hr class="m-3">
 <div class="measurements" id="humidity">
@@ -72,7 +74,7 @@
         <span class="material-icons material-symbols-outlined">humidity_percentage</span>
         <span class="measurements-title">Humidity</span>
     </div>
-    <div class="container px-5 mt-4">
+    <div class="container px-5 my-4">
       <div class="row gx-4">
         <div class="col">
             <p class="h5 text-center m-3">Current</p>
@@ -101,6 +103,9 @@
         </div>
       </div>
     </div>
+    <div class="text-center">
+        <a href="/edit_humidity" class="btn btn-secondary my-4">Set Preset Range</a>
+    </div>
 </div>
 <hr class="m-3">
 <div class="measurements" id="pHlevel">
@@ -108,7 +113,7 @@
         <span class="material-icons material-symbols-outlined">water_ph</span>
         <span class="measurements-title">pH Level</span>
     </div>
-    <div class="container px-5 mt-4">
+    <div class="container px-5 my-4">
       <div class="row gx-4">
         <div class="col">
             <p class="h5 text-center m-3">Current</p>
@@ -137,6 +142,9 @@
         </div>
       </div>
     </div>
+    <div class="text-center">
+        <a href="/edit_ph" class="btn btn-secondary my-4">Set Preset Range</a>
+    </div>
 </div>
 <hr class="m-3" id="moisture">
 <div class="measurements">
@@ -144,7 +152,7 @@
         <span class="material-icons material-symbols-outlined">water</span>
         <span class="measurements-title">Moisture</span>
     </div>
-    <div class="container px-5 mt-4">
+    <div class="container px-5 my-4">
       <div class="row gx-4">
         <div class="col">
             <p class="h5 text-center m-3">Current</p>

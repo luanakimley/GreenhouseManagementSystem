@@ -1,12 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,800;1,800&family=Quattrocento+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 html {
-  height: 100%;
+  scroll-padding-top: 100px;
 }
 
 body {
   background-color: #FEFAF5;
   font-family: "Quattrocento Sans", sans-serif;
-  height: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -23,6 +22,13 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #31453D;
   border-color: #31453D;
   color: white;
+}
+
+.btn-link {
+  color: #31453D;
+}
+.btn-link:hover, .btn-link:active, .btn-link:focus {
+  color: #31453D;
 }
 
 .btn-secondary {
@@ -52,6 +58,13 @@ h1, h2, h3, h4, h5, h6 {
   color: #31453D;
 }
 
+.back-button-edit {
+  color: #FEFAF5;
+}
+.back-button-edit:hover {
+  color: #FEFAF5;
+}
+
 .logo {
   width: 155px;
 }
@@ -60,6 +73,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 100vw;
   background-color: #31453D;
   padding: 25px;
+  margin-bottom: 0;
   color: #FEFAF5;
   text-align: center;
 }
@@ -122,6 +136,11 @@ h1, h2, h3, h4, h5, h6 {
 
 .my-float {
   margin-top: 16px;
+}
+
+.range-form-title {
+  color: #61513C;
+  font-weight: bold;
 }
 
 /*# sourceMappingURL=main.css.map */

@@ -71,7 +71,6 @@ uuid : "e6f98bfc-65f6-11ed-9022-0242ac120002"
 pubnub.addListener({
     status: function(statusEvent){
         if(statusEvent.category === "PNConnectedCategory"){
-
             console.log("connected to pubnub")
         }
     },

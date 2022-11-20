@@ -15,8 +15,6 @@ app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')
 app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')
 app.config['MYSQL_DB'] = 'GMS'
 
-print(os.getenv('MYSQL_USER'))
-
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
@@ -35,12 +33,11 @@ def index():
     cursor.execute("select * from UCL where users_id=%s", (users_id,))
     user_culture_lifecycle = cursor.fetchall()
 
-    session["UCL"] = user_culture_lifecycle[0][0]
-
     if len(user_culture_lifecycle) == 0:
         return redirect("/landing")
 
-    return redirect("/monitoring")
+    else:
+        return redirect("/monitoring")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -60,10 +57,16 @@ def login_action():
         password = user_data[0][3]
 
         salt = os.getenv('SALT').encode()
-        if bcrypt.hashpw(user_password.encode('utf-8'), salt) == password.encode('utf-8'):
+        if email.lower() == user_data[0][2] and bcrypt.hashpw(user_password.encode('utf-8'), salt) == password.encode('utf-8'):
             session["users_id"] = user_data[0][0]
             session["username"] = user_data[0][1]
             session["email"] = user_data[0][2]
+
+            cursor = mysql.connection.cursor()
+            cursor.execute("select * from UCL where users_id=%s", (user_data[0][0],))
+            user_culture_lifecycle = cursor.fetchall()
+
+            session["UCL"] = user_culture_lifecycle
             return redirect("/")
         else:
             return redirect("/login")
@@ -109,6 +112,8 @@ def register():
 def logout():
     session["username"] = None
     session["email"] = None
+    session["users_id"] = None
+    session["UCL"] = None
     return redirect("/")
 
 
@@ -129,19 +134,6 @@ def culture_submit():
     cursor.execute('''insert into UCL(users_id, culture_id, lifecycle_id) values (%s, %s, %s)''',
                    (session["users_id"], culture, 1))
     mysql.connection.commit()
-    return redirect("/")
-
-
-@app.route("/monitoring")
-def monitoring():
-
-    cursor = mysql.connection.cursor()
-    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s)", [session["users_id"]])
-    mysql.connection.commit()
-    culture_name = cursor.fetchall()[0][0]
-
-    cursor.execute("select * from Lifecycle")
-    lifecycle = cursor.fetchall()
 
     users_id = session["users_id"]
     cursor = mysql.connection.cursor()
@@ -150,10 +142,160 @@ def monitoring():
 
     session["UCL"] = user_culture_lifecycle
 
-    cursor.execute("select * from PresetData where culture_id=%s and lifecycle_id=%s", [session["UCL"][0][2], session["UCL"][0][3]])
+    cursor.execute("select * from PresetData where culture_id=%s and lifecycle_id=%s",
+                   [session["UCL"][0][2], session["UCL"][0][3]])
     preset_data = cursor.fetchall()
 
+    cursor.execute('''insert into DataRanges(ucl_id, creation_dateTime, tempMin, tempMax, humidityMin, humidityMax, 
+    pHMin, phMax) values (%s, curdate(), %s, %s, %s, %s, %s, %s)''',
+                   (session["UCL"][0][0], preset_data[0][3], preset_data[0][4], preset_data[0][5],
+                   preset_data[0][6], preset_data[0][7], preset_data[0][8])
+                   )
+    mysql.connection.commit()
+    return redirect("/")
+
+
+@app.route("/monitoring")
+def monitoring():
+    cursor = mysql.connection.cursor()
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s)", [session["users_id"]])
+    mysql.connection.commit()
+    culture_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select * from Lifecycle")
+    lifecycle = cursor.fetchall()
+
+    cursor.execute("select * from DataRanges where ucl_id=%s", [session["UCL"][0][0]])
+    preset_data = cursor.fetchall()
+
+    cursor.close()
+
     return render_template("monitoring.html", culture_name=culture_name, lifecycles=lifecycle, preset_data=preset_data)
+
+
+@app.route("/edit_temp")
+def edit_temp():
+    cursor = mysql.connection.cursor()
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s)",
+                   [session["users_id"]])
+    mysql.connection.commit()
+    culture_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
+    lifecycle_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select tempMin, tempMax from DataRanges where ucl_id=%s", [session["UCL"][0][0]])
+    tempRange = cursor.fetchall()
+
+    return render_template("edit_temp.html", culture_name=culture_name, lifecycle_name=lifecycle_name, tempRange=tempRange)
+
+
+@app.route("/edit_temp_action", methods=["POST"])
+def edit_temp_action():
+    temp_min = request.form.get("tempMin")
+    temp_max = request.form.get("tempMax")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute('''update DataRanges set tempMin=%s, tempMax=%s where ucl_id=%s''', (temp_min, temp_max, session["UCL"][0][0]))
+    mysql.connection.commit()
+
+    return redirect("/monitoring")
+
+
+@app.route("/reset_default_temp")
+def reset_default_temp():
+    cursor = mysql.connection.cursor()
+    cursor.execute("select tempMin, tempMax from PresetData where culture_id=%s and lifecycle_id=%s", [session["UCL"][0][2], session["UCL"][0][3]])
+    default_temp = cursor.fetchall()
+    cursor.execute('''update DataRanges set tempMin=%s, tempMax=%s where ucl_id=%s''',
+                   (default_temp[0][0], default_temp[0][1], session["UCL"][0][0]))
+    mysql.connection.commit()
+
+    return redirect("/edit_temp")
+
+
+@app.route("/edit_humidity")
+def edit_humidity():
+    cursor = mysql.connection.cursor()
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s)",
+                   [session["users_id"]])
+    mysql.connection.commit()
+    culture_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
+    lifecycle_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select humidityMin, humidityMax from DataRanges where ucl_id=%s", [session["UCL"][0][0]])
+    humidity_range = cursor.fetchall()
+
+    return render_template("edit_humidity.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
+                           humidity_range=humidity_range)
+
+
+@app.route("/edit_humidity_action", methods=["POST"])
+def edit_humidity_action():
+    humidity_min = request.form.get("humidityMin")
+    humidity_max = request.form.get("humidityMax")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute('''update DataRanges set humidityMin=%s, humidityMax=%s where ucl_id=%s''', (humidity_min, humidity_max, session["UCL"][0][0]))
+    mysql.connection.commit()
+
+    return redirect("/monitoring")
+
+
+@app.route("/reset_default_humidity")
+def reset_default_humidity():
+    cursor = mysql.connection.cursor()
+    cursor.execute("select humidityMin, humidityMax from PresetData where culture_id=%s and lifecycle_id=%s", [session["UCL"][0][2], session["UCL"][0][3]])
+    default_humidity = cursor.fetchall()
+    cursor.execute('''update DataRanges set humidityMin=%s, humidityMax=%s where ucl_id=%s''',
+                   (default_humidity[0][0], default_humidity[0][1], session["UCL"][0][0]))
+    mysql.connection.commit()
+
+    return redirect("/edit_humidity")
+
+
+@app.route("/edit_ph")
+def edit_ph():
+    cursor = mysql.connection.cursor()
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s)",
+                   [session["users_id"]])
+    mysql.connection.commit()
+    culture_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
+    lifecycle_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select pHMin, pHMax from DataRanges where ucl_id=%s", [session["UCL"][0][0]])
+    ph_range = cursor.fetchall()
+
+    return render_template("edit_ph.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
+                           ph_range=ph_range)
+
+
+@app.route("/edit_ph_action", methods=["POST"])
+def edit_ph_action():
+    ph_min = request.form.get("pHMin")
+    ph_max = request.form.get("pHMax")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute('''update DataRanges set pHMin=%s, pHMax=%s where ucl_id=%s''', (ph_min, ph_max, session["UCL"][0][0]))
+    mysql.connection.commit()
+
+    return redirect("/monitoring")
+
+
+@app.route("/reset_default_ph")
+def reset_default_ph():
+    cursor = mysql.connection.cursor()
+    cursor.execute("select pHMin, pHMax from PresetData where culture_id=%s and lifecycle_id=%s", [session["UCL"][0][2], session["UCL"][0][3]])
+    default_ph = cursor.fetchall()
+    cursor.execute('''update DataRanges set pHMin=%s, pHMax=%s where ucl_id=%s''',
+                   (default_ph[0][0], default_ph[0][1], session["UCL"][0][0]))
+    mysql.connection.commit()
+
+    return redirect("/edit_ph")
 
 
 if __name__ == '__main__':
