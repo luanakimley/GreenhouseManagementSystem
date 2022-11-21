@@ -158,7 +158,7 @@ def culture_submit():
 @app.route("/monitoring")
 def monitoring():
     cursor = mysql.connection.cursor()
-    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)", [session["users_id"]])
+    cursor.execute("select name from Culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)", [session["users_id"]])
     mysql.connection.commit()
     culture_name = cursor.fetchall()[0][0]
 
@@ -179,7 +179,7 @@ def monitoring():
 @app.route("/edit_temp")
 def edit_temp():
     cursor = mysql.connection.cursor()
-    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
+    cursor.execute("select name from Culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
                    [session["users_id"]])
     mysql.connection.commit()
     culture_name = cursor.fetchall()[0][0]
@@ -220,12 +220,12 @@ def reset_default_temp():
 @app.route("/edit_humidity")
 def edit_humidity():
     cursor = mysql.connection.cursor()
-    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
+    cursor.execute("select name from Culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
                    [session["users_id"]])
     mysql.connection.commit()
     culture_name = cursor.fetchall()[0][0]
 
-    cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
+    cursor.execute("select name from Lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
     lifecycle_name = cursor.fetchall()[0][0]
 
     cursor.execute("select humidityMin, humidityMax from DataRanges where ucl_id=%s", [session["UCL"][0][0]])
@@ -262,12 +262,12 @@ def reset_default_humidity():
 @app.route("/edit_ph")
 def edit_ph():
     cursor = mysql.connection.cursor()
-    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
+    cursor.execute("select name from Culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
                    [session["users_id"]])
     mysql.connection.commit()
     culture_name = cursor.fetchall()[0][0]
 
-    cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
+    cursor.execute("select name from Lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
     lifecycle_name = cursor.fetchall()[0][0]
 
     cursor.execute("select pHMin, pHMax from DataRanges where ucl_id=%s", [session["UCL"][0][0]])
