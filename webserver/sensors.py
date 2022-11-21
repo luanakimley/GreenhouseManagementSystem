@@ -1,9 +1,7 @@
 # Imports
-from flask import Flask, redirect, render_template, request, session
-import json
+from flask import Flask
 import RPi.GPIO as GPIO
 import time, threading
-from datetime import datetime
 import adafruit_dht
 import board
 import busio
@@ -11,9 +9,7 @@ import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 from flask_session import Session
 from flask_mysqldb import MySQL
-import MySQLdb
 from dotenv import load_dotenv
-import os
 from pubnub.callbacks import SubscribeCallback
 from pubnub.enums import PNStatusCategory, PNOperationType
 from pubnub.pnconfiguration import PNConfiguration
@@ -25,10 +21,11 @@ app = Flask(__name__)
 
 # PubNub configuration
 pnconfig = PNConfiguration()
-# pnconfig.cipher_key = 'myCipherKey'
+#pnconfig.cipher_key = 'myCipherKey'
 pnconfig.subscribe_key = 'sub-c-5832596e-d4b6-4552-b2c0-a28a18fadd40'
 pnconfig.publish_key = 'pub-c-dab1a887-ba42-48aa-b99d-e42ecf3dedb3'
 pnconfig.user_id = "e6f98bfc-65f6-11ed-9022-0242ac120002"
+pnconfig.ssl = True # Encrypt the data when sent to PubNub
 pubnub = PubNub(pnconfig)
 
 myChannel = "greenhouse"
@@ -96,7 +93,6 @@ p = GPIO.PWM(en_p2, 1000)
 
 p.start(100)
 
-
 def read_ph():  # Function to read the Ph value
     while True:
         buf = list()
@@ -111,7 +107,7 @@ def read_ph():  # Function to read the Ph value
 
         # print("avg V: ", round(avg, 2))
         print("Ph Buf: ", round(ph_val, 2))
-        publish(myChannel, {"Ph": ph_val})
+        publish(myChannel, {"Ph": round(ph_val, 2)})
         time.sleep(2)
 
         # TODO if the ph is under value run the pump1
@@ -128,32 +124,26 @@ def read_ph():  # Function to read the Ph value
         #         GPIO.output(in2_2, GPIO.LOW)
         #         print("forward")
         #
-
-
 def read_temp():  # Function to read the temperature and humidity
     while True:
         try:
             # Detecting the moisture from the soil
             if GPIO.input(moist_pin):
                 value = "Dry"
-                print("The soil is dry!")
+                #print("The soil is dry!")
                 publish(myChannel, {"Soil is": value})
             else:
                 value = "Wet"
-                print("The soil is wet!")
+                #print("The soil is wet!")
                 publish(myChannel, {"Soil is": value})
 
             # Temperature and humidity data
             temp = tmp_sensor.temperature
             temp_f = temp * (9 / 5) + 32
             humidity = tmp_sensor.humidity
-            print("Temp: {:.1f} C / {:.1f} F    Humidity: {}% ".format(temp, temp_f, humidity))
-            publish(myChannel, {"temp": temp})
-            publish(myChannel, {"hum": humidity})
+            #print("Temp: {:.1f} C / {:.1f} F    Humidity: {}% ".format(temp, temp_f, humidity))
+            publish(myChannel, {"atmos": {"temp": temp, "hum": humidity}})
 
-            # today = datetime.now().round()
-            # print(today)
-            # return temp
         except RuntimeError as error:
             print(error.args[0])
             time.sleep(2.0)
@@ -174,7 +164,6 @@ def read_temp():  # Function to read the temperature and humidity
         # except mysql.connector.Error as err:
         # print("Something went wrong: {}".format(err))
 
-
 def beep(repeat):
     for i in range(0, repeat):
         for pulse in range(60):
@@ -183,7 +172,6 @@ def beep(repeat):
             GPIO.output(Buzzer_pin, False)
             time.sleep(0.001)
         time.sleep(0.02)
-
 
 def motion_detection():
     data["alarm"] = False
@@ -205,11 +193,9 @@ def motion_detection():
             print("Turning on the buzzer from index.html")
         time.sleep(2)
 
-
 # PubNub functions
 def publish(custom_channel, msg):
     pubnub.publish().channel(custom_channel).message(msg).pn_async(my_publish_callback)
-
 def my_publish_callback(envelope, status):
     # Check whether request successfully completed or not
     if not status.is_error():
@@ -265,63 +251,22 @@ class MySubscribeCallback(SubscribeCallback):
             elif eventData[key[0]] is False:
                 data["alarm"] = False
 
-# Routes for flask app
-@app.route("/")
-def index():
-    # temp = read_temp()
-    # print("the temp isRoute:", temp)
-    #today = datetime.now()
-    # print("dnes e:",today)
-    # cursor = mysql.connection.cursor()
-    # cursor.execute(
-    #     "insert into plantdata(creation_dateTime, temp,humidity,ph,moisture) values (%s, %s, %s, %s, %s, %s)",
-    #     #today.strfrime('%Y-%m-%d %H:%M:%S'), temp, 50, 5.5, 'wet')
-    #     today, temp, 50, 5.5, 'wet')
-    # mysql.connection.commit()
-
-    return render_template("index.html")
-
-
-@app.route("/keep_alive")
-def keep_alive():
-    global alive, data
-    alive += 1
-    keep_alive_count = str(alive)
-    data['keep_alive'] = keep_alive_count
-    parsed_json = json.dumps(data)
-    print(parsed_json)
-    return str(parsed_json)
-
-
-@app.route("/status=<name>-<action>", methods=["POST"])
-def event(name, action):
-    global data
-    print("Got: " + name + ", action" + action)
-    if name == "buzzer":
-        if action == "ON":
-            data["alarm"] = True
-        elif action == "OFF":
-            data["alarm"] = False
-    return str("OK")
-
 
 if __name__ == '__main__':
-    # temp = read_temp()
-    # print("temp is_Main: ",temp)
+    #Start PubNub Listener
+    pubnub.add_listener(MySubscribeCallback())
+    pubnub.subscribe().channels(myChannel).execute()
+    time.sleep(3)
+
+    #Start the threads
     sensors_thread_1 = threading.Thread(target=motion_detection)
     sensors_thread_1.start()
+
     sensors_thread_2 = threading.Thread(target=read_temp)
     sensors_thread_2.start()
+
     sensors_thread_3 = threading.Thread(target=read_ph)
     sensors_thread_3.start()
 
-    pubnub.add_listener(MySubscribeCallback())
-    pubnub.subscribe().channels(myChannel).execute()
-    # Run all the thread one after another
-    # sensors_thread_1.join()
-    # sensors_thread_2.join()
-    # sensors_thread_3.join()
 
-    app.run(host="192.168.8.130", port=5000)
-    # app.run(host="10.108.4.227", port=5000)
 
