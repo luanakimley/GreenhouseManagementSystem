@@ -111,7 +111,7 @@ def read_ph():  # Function to read the Ph value
         time.sleep(2)
 
         # TODO if the ph is under value run the pump1
-        # if ph_val < 4: # if the Ph is less than 7 run the pump1
+        #  if ph_val < 4: # if the Ph is less than 7 run the pump1
         #     if (temp1 == 1):
         #         GPIO.output(in1_p1, GPIO.HIGH)
         #         GPIO.output(in2_p1, GPIO.LOW)
