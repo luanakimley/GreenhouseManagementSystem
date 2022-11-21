@@ -91,6 +91,14 @@ h1, h2, h3, h4, h5, h6 {
   color: #FEFAF5;
 }
 
+.dropdown {
+  z-index: 1030;
+}
+
+.dropdown-item {
+  color: black !important;
+}
+
 .measurements {
   margin: 30px;
   font-size: xx-large;

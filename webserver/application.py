@@ -158,25 +158,28 @@ def culture_submit():
 @app.route("/monitoring")
 def monitoring():
     cursor = mysql.connection.cursor()
-    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s)", [session["users_id"]])
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)", [session["users_id"]])
     mysql.connection.commit()
     culture_name = cursor.fetchall()[0][0]
 
     cursor.execute("select * from Lifecycle")
-    lifecycle = cursor.fetchall()
+    all_lifecycle = cursor.fetchall()
 
     cursor.execute("select * from DataRanges where ucl_id=%s", [session["UCL"][0][0]])
     preset_data = cursor.fetchall()
 
+    cursor.execute("select name from Lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
+    cur_lifecycle = cursor.fetchall()
+
     cursor.close()
 
-    return render_template("monitoring.html", culture_name=culture_name, lifecycles=lifecycle, preset_data=preset_data)
+    return render_template("monitoring.html", culture_name=culture_name, lifecycles=all_lifecycle, preset_data=preset_data, cur_lifecycle=cur_lifecycle)
 
 
 @app.route("/edit_temp")
 def edit_temp():
     cursor = mysql.connection.cursor()
-    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s)",
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
                    [session["users_id"]])
     mysql.connection.commit()
     culture_name = cursor.fetchall()[0][0]
@@ -217,7 +220,7 @@ def reset_default_temp():
 @app.route("/edit_humidity")
 def edit_humidity():
     cursor = mysql.connection.cursor()
-    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s)",
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
                    [session["users_id"]])
     mysql.connection.commit()
     culture_name = cursor.fetchall()[0][0]
@@ -259,7 +262,7 @@ def reset_default_humidity():
 @app.route("/edit_ph")
 def edit_ph():
     cursor = mysql.connection.cursor()
-    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s)",
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
                    [session["users_id"]])
     mysql.connection.commit()
     culture_name = cursor.fetchall()[0][0]
@@ -296,6 +299,35 @@ def reset_default_ph():
     mysql.connection.commit()
 
     return redirect("/edit_ph")
+
+
+@app.route("/lifecycle/<int:lifecycle_id>")
+def lifecycle(lifecycle_id):
+    cursor = mysql.connection.cursor()
+    cursor.execute("select * from UCL where users_id=%s and culture_id=%s and lifecycle_id=%s", [session["UCL"][0][1], session["UCL"][0][2], lifecycle_id])
+    ucl = cursor.fetchall()
+
+    if len(ucl) == 0:
+        cursor.execute('''insert into UCL(users_id, culture_id, lifecycle_id) values (%s, %s, %s)''',
+                       (session["UCL"][0][1], session["UCL"][0][2], lifecycle_id))
+        mysql.connection.commit()
+        cursor.execute("select * from UCL where users_id=%s and culture_id=%s and lifecycle_id=%s", [session["UCL"][0][1], session["UCL"][0][2], lifecycle_id])
+        session["UCL"] = cursor.fetchall()
+
+        cursor.execute("select * from PresetData where culture_id=%s and lifecycle_id=%s", [session["UCL"][0][2], session["UCL"][0][3]])
+        preset_data = cursor.fetchall()
+
+        cursor.execute('''insert into DataRanges(ucl_id, creation_dateTime, tempMin, tempMax, humidityMin, humidityMax,
+            pHMin, phMax) values (%s, curdate(), %s, %s, %s, %s, %s, %s)''',
+                       (session["UCL"][0][0], preset_data[0][3], preset_data[0][4], preset_data[0][5],
+                        preset_data[0][6], preset_data[0][7], preset_data[0][8])
+                       )
+        mysql.connection.commit()
+
+        return redirect("/monitoring")
+
+    session["UCL"] = ucl
+    return redirect("/monitoring")
 
 
 if __name__ == '__main__':

@@ -5,13 +5,17 @@
 <div class="header">
     <h1>{{ culture_name }}</h1>
     <span>
-        <span>Lifecycle: &nbsp;</span>
-        <!--   TODO: onchange = insert to UCL with new lifecycle?    -->
-        <select aria-label="Select lifecycle">
-            {% for lifecycle in lifecycles %}
-            <option value="{{ lifecycle[0] }}">{{ lifecycle[1] }}</option>
-            {% endfor %}
-        </select>
+        <div class="dropdown">
+            Lifecycle: &nbsp;
+          <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuLifecycle" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ cur_lifecycle[0][0] }}
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuLifecycle">
+              {% for lifecycle in lifecycles %}
+              <li><a class="dropdown-item" href="/lifecycle/{{ lifecycle[0] }}">{{ lifecycle[1] }}</a></li>
+              {% endfor %}
+          </ul>
+        </div>
     </span>
 </div>
 <div class="header mt-0 sticky-top menu">
