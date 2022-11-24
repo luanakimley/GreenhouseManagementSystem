@@ -9,6 +9,7 @@ const setupPubNub = () => {
 		subscribeKey: 'sub-c-5832596e-d4b6-4552-b2c0-a28a18fadd40',
 		publishKey: 'pub-c-dab1a887-ba42-48aa-b99d-e42ecf3dedb3',
 		userId: "e6f98bfc-65f6-11ed-9022-0242ac120002",
+		//cipherKey: "myCipherKey"
 	});
 
 	const listener = {
