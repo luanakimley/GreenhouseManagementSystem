@@ -61,3 +61,45 @@ function validateConfirmPassword() {
 function validateSignUpForm() {
     return validateEmail() && validateUsername() && validatePassword() && validateConfirmPassword()
 }
+
+function validateEditTemperatureForm() {
+    let minVal = document.forms["edit_temp"]["tempMin"].value
+    let maxVal = document.forms["edit_temp"]["tempMax"].value
+
+    if (parseFloat(minVal) > parseFloat(maxVal)) {
+        document.getElementById("tempErrorMessage").innerHTML = 'Minimum value must be less than the maximum value'
+        return false
+    }
+    else {
+        document.getElementById("tempErrorMessage").innerHTML = ''
+        return true
+    }
+}
+
+function validateEditHumidityForm() {
+    let minVal = document.forms["edit_humidity"]["humidityMin"].value
+    let maxVal = document.forms["edit_humidity"]["humidityMax"].value
+
+    if (parseInt(minVal) > parseInt(maxVal)) {
+        document.getElementById("humidityErrorMessage").innerHTML = 'Minimum value must be less than the maximum value'
+        return false
+    }
+    else {
+        document.getElementById("humidityErrorMessage").innerHTML = ''
+        return true
+    }
+}
+
+function validateEditPHForm() {
+    let minVal = document.forms["edit_ph"]["pHMin"].value
+    let maxVal = document.forms["edit_ph"]["pHMax"].value
+
+    if (parseFloat(minVal) > parseFloat(maxVal)) {
+        document.getElementById("pHErrorMessage").innerHTML = 'Minimum value must be less than the maximum value'
+        return false
+    }
+    else {
+        document.getElementById("pHErrorMessage").innerHTML = ''
+        return true
+    }
+}

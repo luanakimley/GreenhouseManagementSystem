@@ -7,16 +7,17 @@
     <h1>{{ culture_name }}</h1>
     <p><strong>Lifecycle: </strong>{{ lifecycle_name }}</p>
 </div>
-<form action="/edit_humidity_action" method="post">
+<form onsubmit="return validateEditHumidityForm()" action="/edit_humidity_action" method="post" name="edit_humidity">
     <div class="range-form-title h3 text-center mt-4">
-        Set Humidity Range
+        Set Air Humidity Range
     </div>
     <div class="d-grid gap-2 col-7 mx-auto text-center">
     <hr>
+        <span class="mb-4">Value must be between 0%-100%</span>
     <div class="mb-3 row mx-auto">
         <label for="inputMin" class="col-auto col-form-label">Minimum: </label>
         <div class="col-auto">
-          <input name="humidityMin" type="text" class="form-control" id="inputMin" value="{{ humidity_range[0][0] }}">
+          <input name="humidityMin" type="number" min="0" max="100" class="form-control" id="inputMin" value="{{ humidity_range[0][0] }}" onfocusin="validateEditHumidityForm()" onfocusout="validateEditHumidityForm()" required>
         </div>
         <span class="col-auto">
             %
@@ -25,12 +26,13 @@
     <div class="mb-3 row mx-auto">
         <label for="inputMax" class="col-auto col-form-label">Maximum: </label>
         <div class="col-auto">
-            <input name="humidityMax" type="text" class="form-control" id="inputMax" value="{{ humidity_range[0][1] }}">
+            <input name="humidityMax" type="number" min="0" max="100" class="form-control" id="inputMax" value="{{ humidity_range[0][1] }}" onfocusin="validateEditHumidityForm()" onfocusout="validateEditHumidityForm()" required>
         </div>
         <span class="col-auto">
             %
         </span>
     </div>
+        <span id="humidityErrorMessage" class="mt-3 text-danger"></span>
     <input type="submit" class="btn btn-secondary p-2 mt-5" value="Confirm">
   </div>
 </form>
@@ -39,4 +41,5 @@
         <input class="btn btn-link" type="submit" value="Reset to default preset value">
     </div>
 </form>
+<script src="../static/js/form_validation.js"></script>
 {% endblock %}
