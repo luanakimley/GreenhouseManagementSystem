@@ -124,11 +124,11 @@ INSERT INTO preset_data VALUES (28, 5, 4, 10, 15.5, 40, 70, 6.0, 7.5);
 INSERT INTO preset_data VALUES (29, 5, 5, 10, 15.5, 40, 70, 6.0, 7.5);
 INSERT INTO preset_data VALUES (30, 5, 6, 10, 15.5, 40, 70, 6.0, 7.5);
 
-INSERT INTO user VALUES (1, "admin", "admin@admin.com", "123");
-INSERT INTO user VALUES (2, "teomeo", "teomeo@gmail.com", "456");
-INSERT INTO user VALUES (3, "shakira", "shakira@gmail.com", "abc");
-INSERT INTO user VALUES (4, "vincent", "vincent@gmail.com", "def");
-INSERT INTO user VALUES (5, "luana", "luana@gmail.com", "123abc");
+INSERT INTO user VALUES (1, "admin", "admin@admin.com", "$2b$12$T9sRNpwI2.sMPmz/OtI1pe8Yi5hu0iYsIoXwpEiP1MKq5Y9ZKmfN.");
+INSERT INTO user VALUES (2, "teomeo", "teomeo@gmail.com", "$2b$12$T9sRNpwI2.sMPmz/OtI1pe8Yi5hu0iYsIoXwpEiP1MKq5Y9ZKmfN.");
+INSERT INTO user VALUES (3, "shakira", "shakira@gmail.com", "$2b$12$T9sRNpwI2.sMPmz/OtI1pe8Yi5hu0iYsIoXwpEiP1MKq5Y9ZKmfN.");
+INSERT INTO user VALUES (4, "vincent", "vincent@gmail.com", "$2b$12$T9sRNpwI2.sMPmz/OtI1pe8Yi5hu0iYsIoXwpEiP1MKq5Y9ZKmfN.");
+INSERT INTO user VALUES (5, "luana", "luana@gmail.com", "$2b$12$T9sRNpwI2.sMPmz/OtI1pe8Yi5hu0iYsIoXwpEiP1MKq5Y9ZKmfN.");
 
 INSERT INTO ucl VALUES (1, 1, 1, 1);
 INSERT INTO ucl VALUES (2, 2, 3, 2);
@@ -145,7 +145,7 @@ INSERT INTO crop_data VALUES (7, 1, "2022-11-13 15:00:00", 20, 66, 7.0, "Wet");
 
 INSERT INTO data_range VALUES (1, 1, "2022-11-12 15:00:00", 15, 20, 70, 80, 6.0, 7.0);
 
-INSERT INTO notification VALUES (1, "Your crop needs wateri21, 25, 65, 75, 5.4, 6.5);ng", "warning1.png");
+INSERT INTO notification VALUES (1, "Your crop needs watering", "warning1.png");
 INSERT INTO notification VALUES (2, "Your crop is too warm", "warning2.png");
 INSERT INTO notification VALUES (3, "Your crop needs more pH solution", "warning3.png");
 INSERT INTO notification VALUES (4, "Your crop is too cold", "warning4.png");
