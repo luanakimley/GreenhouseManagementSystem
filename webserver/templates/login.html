@@ -1,5 +1,21 @@
 {% extends "layout.html" %}
 {% block body %}
+<div>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <script>
+      Swal.fire({
+            title:"Login failed!",
+            text: "{{ message }}",
+            confirmButtonColor: "#31453D",
+            icon: "error"
+        })
+    </script>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
 <form name="login" action = "/login_action" method="post" class="my-auto">
   <div class="d-grid gap-2 col-7 mx-auto text-center">
     <span class="d-flex text-start mt-5 align-items-center gap-3">

@@ -1,4 +1,5 @@
-from flask import Flask, redirect, render_template, request, session
+import MySQLdb
+from flask import Flask, redirect, render_template, request, session, flash
 from flask_session import Session
 from flask_mysqldb import MySQL
 import bcrypt
@@ -69,8 +70,10 @@ def login_action():
             session["UCL"] = user_culture_lifecycle
             return redirect("/")
         else:
+            flash("Wrong email address or password")
             return redirect("/login")
-    except:
+    except Exception:
+        flash("Wrong email address or password")
         return redirect("/login")
 
 
@@ -81,15 +84,13 @@ def signup():
 
 @app.route("/signup_action", methods=["POST"])
 def register():
+    try:
         email = request.form.get("email")
         username = request.form.get("username")
         password = request.form.get("password")
 
         salt = os.getenv('SALT').encode()
         hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
-
-        session["username"] = username
-        session["email"] = email
 
         cursor = mysql.connection.cursor()
         cursor.execute('''insert into user(username, email, password) values (%s, %s, %s)''',
@@ -99,10 +100,15 @@ def register():
         cursor.execute("select users_id from user where email=%s", [email])
         users_id = cursor.fetchall()[0][0]
 
+        session["username"] = username
+        session["email"] = email
         session["users_id"] = users_id
 
         cursor.close()
         return redirect("/landing")
+    except MySQLdb.IntegrityError:
+        flash("A user with that email address already exists")
+        return redirect("/signup")
 
 
 @app.route("/logout")

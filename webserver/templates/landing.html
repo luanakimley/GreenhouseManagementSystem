@@ -4,7 +4,7 @@
   <div class="d-grid gap-2 col-7 mx-auto text-center">
     <img class="logo mx-auto" src="/static/images/evergreens_logo.png" alt="Evergreens Logo">
     <h2 class="mb-5">Welcome, {{ session.username }}!</h2>
-    Choose culture program:
+    Choose crop you are growing:
     <form action="/culture_submit" method="post">
       <select name="culture" class="form-select" aria-label="Select culture">
         {% for culture in cultures %}
