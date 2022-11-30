@@ -79,4 +79,31 @@ def test_temperature_max(tempMax, valid):
         assert not valid
 
 
+@pytest.mark.parametrize(
+    "phMax,valid",
+    [
+        (6.0, True),
+        (10.0, False),
+        (8.0, False),
+        (20.1, False),
+        (19.9, False)
+    ]
+)
+def test_temperature_max(tempMax, valid):
+    data = {
+
+        'pHMin': 6.0,
+        'pHMax': 7.0
+    }
+
+    try:
+        cur = db.cursor()
+        cur.execute("select * from data_range where pHMax=%s", [pHMax])
+        user = cur.fetchall()
+        assert valid
+        assert user is not None
+        assert user[0][3] == data["pHMax"]
+        assert user[0][4] == data["pHMin"]
+    except:
+        assert not valid
 

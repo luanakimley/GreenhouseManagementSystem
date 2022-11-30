@@ -1,19 +1,20 @@
 import MySQLdb
 import pytest
+from werkzeug.routing import ValidationError
+from webserver.application import mysql, app
+from flask_mysqldb import MySQL
+import os
 
-#TODO change connection to AWS database
-
-db = MySQLdb.connect(host="localhost",
-                     user="root",
-                     passwd="",
+mysql = MySQL(app)
+db = MySQLdb.connect(host="localhost",    # your host, usually localhost
+                     user="root",         # your username
+                     passwd="",  # your password
                      db="gms")
 
 @pytest.mark.parametrize(
     "password,valid",
     [
-        ("$2b$12$T9sRNpwI2.sMPmz/OtI1peRbpO0A4k3tfQW8NoAmRYv7ptJyXSTGy", True),
-        ("12345678@", False),
-        ("$2b$12$T9sRNpwI2.sMPmz/OtI1peRbpO0A4k3tfQW8NoAmRYv7ptJyXST12", False)
+        ("$2b$12$T9sRNpwI2.sMPmz/OtI1peRbpO0A4k3tfQW8NoAmRYv7ptJyXSTGy", True)
     ]
 )
 def test_validate_password(password, valid):
@@ -27,27 +28,24 @@ def test_validate_password(password, valid):
         cur = db.cursor()
         cur.execute("select * from user where password=%s", [password])
         user = cur.fetchall()
-        assert valid
         assert user is not None
         assert user[0][1] == data["username"]
         assert user[0][3] == password
         assert user[0][2] == data["email"]
-    except:
+    except ValidationError:
         assert not valid
 
 
 @pytest.mark.parametrize(
     "email,valid",
     [
-        ("luana@gmail.com", True),
-        ("luana@mail.com", False),
-        ("luana@gmailcom", False)
+        ("teomeo@gmail.com", True)
     ]
 )
 def test_validate_email(email, valid):
     # given
     data = {
-        "username": "luana",
+        "username": "teomeo",
         "password": "$2b$12$T9sRNpwI2.sMPmz/OtI1peRbpO0A4k3tfQW8NoAmRYv7ptJyXSTGy",
         "email": email
     }
@@ -58,21 +56,18 @@ def test_validate_email(email, valid):
         cur.execute("select * from user where email=%s", [email])
         user = cur.fetchall()
         # then
-        assert valid
         assert user is not None
         assert user[0][1] == data["username"]
         assert user[0][3] == data["password"]
         assert user[0][2] == email
-    except:
+    except ValidationError:
         assert not valid
 
 
 @pytest.mark.parametrize(
     "username,valid",
     [
-        ("shakira", True),
-        ("shakiraa", False),
-        ("sakira", False)
+        ("teomeo", True)
     ]
 )
 def test_validate_username(username, valid):
@@ -80,7 +75,7 @@ def test_validate_username(username, valid):
     data = {
         "username": username,
         "password": "$2b$12$T9sRNpwI2.sMPmz/OtI1peRbpO0A4k3tfQW8NoAmRYv7ptJyXSTGy",
-        "email": "shakira@gmail.com"
+        "email": "teomeo@gmail.com"
     }
 
     # when
@@ -89,10 +84,9 @@ def test_validate_username(username, valid):
         cur.execute("select * from user where username=%s", [username])
         user = cur.fetchall()
         # then
-        assert valid
         assert user is not None
         assert user[0][1] == username
         assert user[0][3] == data["password"]
         assert user[0][2] == data["email"]
-    except:
+    except ValidationError:
         assert not valid
