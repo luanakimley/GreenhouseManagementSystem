@@ -107,3 +107,33 @@ def test_temperature_max(tempMax, valid):
     except:
         assert not valid
 
+
+@pytest.mark.parametrize(
+    "phMax,valid",
+    [
+        (65, True),
+        (10.0, False),
+        (8.0, False),
+        (20.1, False),
+        (19.9, False)
+    ]
+)
+def test_humidity(humidityMax, valid):
+    data = {
+
+        'humidityMax': 65,
+        'humidityMin': 75
+    }
+
+    try:
+        cur = db.cursor()
+        cur.execute("select * from data_range where humidityMax=%s", [humidityMax])
+        user = cur.fetchall()
+        assert valid
+        assert user is not None
+        assert user[0][3] == data["humidityMax"]
+        assert user[0][4] == data["humidityMin"]
+    except:
+        assert not valid
+
+
