@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block body %}
+<script src="static/js/main.js"></script>
+<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.0.js"></script>
+<div class="header">
+    <a class="back-button-edit" href="/">
+        <span class="material-icons material-symbols-outlined mb-3">arrow_back</span>
+    </a>
+    <h1>Notifications</h1>
+</div>
+<div class="w-100 h-25 border-bottom border-secondary">
+    <div class="d-flex p-3 justify-content-center my-2 align-items-center">
+        <span class="material-icons material-symbols-outlined fs-1">directions_run</span>
+        <div class="mx-4 d-flex flex-column">
+            <span>{date time}</span>
+            <p class="fw-bold h6 my-2">Motion detected near {culture name}</p>
+        </div>
+    </div>
+</div>
+<div class="w-100 h-25 border-bottom border-secondary">
+    <div class="d-flex p-3 justify-content-center my-2 align-items-center">
+        <span class="material-icons material-symbols-outlined fs-1">directions_run</span>
+        <div class="mx-4 d-flex flex-column">
+            <span>{date time}</span>
+            <p class="fw-bold h6 my-2">Motion detected near {culture name}</p>
+        </div>
+    </div>
+</div>
+<div class="w-100 h-25 border-bottom border-secondary">
+    <div class="d-flex p-3 justify-content-center my-2 align-items-center">
+        <span class="material-icons material-symbols-outlined fs-1">directions_run</span>
+        <div class="mx-4 d-flex flex-column">
+            <span>{date time}</span>
+            <p class="fw-bold h6 my-2">Motion detected near {culture name}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

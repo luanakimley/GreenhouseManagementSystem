@@ -3,6 +3,16 @@
 <script src="static/js/main.js"></script>
 <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.0.js"></script>
 <div class="header">
+    <div class="position-absolute notifications-icon">
+        <a href="/notifications" class="btn btn-light position-relative">
+            <span class="material-icons material-symbols-outlined">
+                notifications
+            </span>
+            <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                <span class="visually-hidden">New alerts</span>
+            </span>
+        </a>
+    </div>
     <h1>{{ culture_name }}</h1>
     <span>
         <div class="dropdown">

@@ -65,6 +65,17 @@ h1, h2, h3, h4, h5, h6 {
   color: #FEFAF5;
 }
 
+.notifications-icon {
+  right: 25px;
+}
+.notifications-icon .material-icons {
+  color: #31453D;
+}
+.notifications-icon .material-icons:hover {
+  color: #8db8a7;
+  transition: 0.5s;
+}
+
 .logo {
   width: 155px;
 }

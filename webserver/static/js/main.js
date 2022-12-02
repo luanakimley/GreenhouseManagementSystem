@@ -33,6 +33,10 @@ const setupPubNub = () => {
 			if (msg["Ph"]) {
 				document.getElementById("cur-ph").innerText = msg["Ph"]
 			}
+
+			if (msg["Motion"]) {
+				
+			}
 		},
 		presence: (presenceEvent) => {
 			// Handle presence
