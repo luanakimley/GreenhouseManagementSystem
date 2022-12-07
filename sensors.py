@@ -14,36 +14,27 @@ from pubnub.callbacks import SubscribeCallback
 from pubnub.enums import PNStatusCategory, PNOperationType
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub import PubNub
+import MySQLdb
 from flask_sqlalchemy import SQLAlchemy
 
 load_dotenv()
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/GMS' #this is the url of database
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
+# MYSQL Database connection
+db = MySQLdb.connect(host="localhost", user="teomeo", passwd="12345678", db="gms")
 
 # PubNub configuration
 pnconfig = PNConfiguration()
-pnconfig.cipher_key = 'myCipherKey'
+#pnconfig.cipher_key = 'myCipherKey'
 pnconfig.subscribe_key = 'sub-c-5832596e-d4b6-4552-b2c0-a28a18fadd40'
 pnconfig.publish_key = 'pub-c-dab1a887-ba42-48aa-b99d-e42ecf3dedb3'
 pnconfig.user_id = "e6f98bfc-65f6-11ed-9022-0242ac120002"
 pnconfig.ssl = True # Encrypt the data when sent to PubNub
 pubnub = PubNub(pnconfig)
+
 alive = 0
 data = {}
-
-# MYSQL Database connection
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'teomeo'
-app.config['MYSQL_PASSWORD'] = '12345678'
-app.config['MYSQL_DB'] = 'gms'
-
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
 
 Session(app)
 mysql = MySQL(app)
@@ -52,7 +43,7 @@ PIR_pin = 23
 Buzzer_pin = 24
 
 myChannel = "greenhouse"
-sensorList = ["buzzer"]
+sensorList = ["buzzer", "temp", "ph", "moisture"]
 
 # GPIO SETUP Motion detection and buzzer pins output
 GPIO.setwarnings(False)
@@ -108,28 +99,35 @@ def read_ph():  # Function to read the Ph value
         publish(myChannel, {"Ph": round(ph_val, 2)}) # Publish the data to PubNub
         print("Ph Buf: ", round(ph_val, 2))
         time.sleep(2)
-        #TODO Get the min and max values from the DB and compare them against current ph value(ph_val)
-        ph_min = 3  # The min value will be taken from DB
-        ph_max = 7  # The max value will be taken from DB
-        if ph_val < ph_min:
-            print("pump1 on - Ph Down")
-            GPIO.output(in1_p1, GPIO.HIGH)
-            GPIO.output(in2_p1, GPIO.LOW)
-            time.sleep(5)
 
-            GPIO.output(in1_p1, GPIO.LOW) #The pump turn off
+        cur = db.cursor()
+        cur.execute("select * from preset_data where presetData_id =%s ", [1])
+        preset_data = cur.fetchall()
+
+        ph_min = preset_data[0][1]  # The min value will be taken from DB
+        ph_max = preset_data[0][2]  # The max value will be taken from DB
+
+        # print("from preset",ph_min,ph_max)
+        if ph_val < ph_min:
+            GPIO.output(in1_p1, GPIO.HIGH)  # The pump turn on
+            GPIO.output(in2_p1, GPIO.LOW)
+            print("pump1 on - Ph Up")
+            time.sleep(5)
+            GPIO.output(in1_p1, GPIO.LOW)  # The pump turn off
             GPIO.output(in2_p1, GPIO.LOW)
             print("Pump1 off")
-        # if ph_val > ph_max:
-        else:
-            print("Pump2 On - Ph Up")
-            GPIO.output(in3_p2, GPIO.LOW)
+            time.sleep(5)
+
+        elif ph_val > ph_max:
+            print("Pump2 On - Ph Down")
+            GPIO.output(in3_p2, GPIO.LOW)  # The pump turn on
             GPIO.output(in4_p2, GPIO.HIGH)
             time.sleep(5)
 
-            GPIO.output(in3_p2, GPIO.LOW) #The pump turn off
+            GPIO.output(in3_p2, GPIO.LOW)  # The pump turn off
             GPIO.output(in4_p2, GPIO.LOW)
             print("Pump2 off")
+            time.sleep(5)
 
 
 def read_temp():  # Function to read the temperature and humidity
@@ -159,17 +157,6 @@ def read_temp():  # Function to read the temperature and humidity
             tmp_sensor.exit()
             raise error
         time.sleep(2)
-
-        # TODO Fix Database connection
-        # try:
-        # cursor = mysql.connection.cursor()
-        # cursor = mysql.connector.connect()
-        # cursor.execute("insert into plantdata(creation_dateTime, temp,humidity,ph,moisture) values (%s, %s, %s, %s, %s, %s)",
-        #                  time.strfrime('%Y-%m-%d %H:%M:%S '), temp, humidity, 5.5, value)
-        # mysql.connection.commit()
-        # cursor.close()
-        # except mysql.connector.Error as err:
-        # print("Something went wrong: {}".format(err))
 
 def beep(repeat):
     for i in range(0, repeat):
