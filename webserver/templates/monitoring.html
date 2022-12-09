@@ -17,14 +17,14 @@
     <span>
         <div class="dropdown">
             Lifecycle: &nbsp;
-            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuLifecycle" data-bs-toggle="dropdown" aria-expanded="false">
-                {{ cur_lifecycle[0][0] }}
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLifecycle">
+          <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuLifecycle" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ cur_lifecycle[0][0] }}
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuLifecycle">
               {% for lifecycle in lifecycles %}
               <li><a class="dropdown-item" href="/lifecycle/{{ lifecycle[0] }}">{{ lifecycle[1] }}</a></li>
               {% endfor %}
-            </ul>
+          </ul>
         </div>
     </span>
 </div>
@@ -52,7 +52,7 @@
         <span class="measurements-title">Air Temperature</span>
     </div>
     <div class="container px-5 my-4">
-        <div class="row gx-4">
+      <div class="row gx-4">
         <div class="col">
             <p class="h5 text-center m-3">Current</p>
                 <div class="measurements-box">
@@ -78,7 +78,7 @@
                 </div>
             </div>
         </div>
-        </div>
+      </div>
     </div>
     <div class="text-center">
         <a href="/edit_temp" class="btn btn-secondary my-4">Set Preset Range</a>
@@ -91,33 +91,33 @@
         <span class="measurements-title">Air Humidity</span>
     </div>
     <div class="container px-5 my-4">
-        <div class="row gx-4">
-            <div class="col">
-                <p class="h5 text-center m-3">Current</p>
-                    <div class="measurements-box">
-                        <div class="p-3 text-center">
-                            <p id="cur-humidity">-</p>
-                            <p class="h6">OK</p>
-                        </div>
-                    </div>
-            </div>
-            <div class="col">
-                <p class="h5 text-center m-3">Preset Value</p>
-                <div class="measurements-box min-max-line">
+      <div class="row gx-4">
+        <div class="col">
+            <p class="h5 text-center m-3">Current</p>
+                <div class="measurements-box">
                     <div class="p-3 text-center">
-                        <div>
-                            <p>{{ preset_data[0][5] }}%</p>
-                            <p class="h6">Min</p>
-                        </div>
+                        <p id="cur-humidity">-</p>
+                        <p class="h6">OK</p>
                     </div>
+                </div>
+        </div>
+        <div class="col">
+            <p class="h5 text-center m-3">Preset Value</p>
+            <div class="measurements-box min-max-line">
+                <div class="p-3 text-center">
+                    <div>
+                        <p>{{ preset_data[0][5] }}%</p>
+                        <p class="h6">Min</p>
+                    </div>
+                </div>
 
-                    <div class="p-3 text-center">
-                        <p>{{ preset_data[0][6] }}%</p>
-                        <p class="h6">Max</p>
-                    </div>
+                <div class="p-3 text-center">
+                    <p>{{ preset_data[0][6] }}%</p>
+                    <p class="h6">Max</p>
                 </div>
             </div>
         </div>
+      </div>
     </div>
     <div class="text-center">
         <a href="/edit_humidity" class="btn btn-secondary my-4">Set Preset Range</a>
@@ -130,33 +130,33 @@
         <span class="measurements-title">Water pH Level</span>
     </div>
     <div class="container px-5 my-4">
-        <div class="row gx-4">
-            <div class="col">
-                <p class="h5 text-center m-3">Current</p>
+      <div class="row gx-4">
+        <div class="col">
+            <p class="h5 text-center m-3">Current</p>
                 <div class="measurements-box">
                     <div class="p-3 text-center">
                         <p id="cur-ph">-</p>
                         <p class="h6">OK</p>
                     </div>
                 </div>
-            </div>
-            <div class="col">
-                <p class="h5 text-center m-3">Preset Value</p>
-                <div class="measurements-box min-max-line">
-                    <div class="p-3 text-center">
-                        <div>
-                            <p>{{ preset_data[0][7] }}</p>
-                            <p class="h6">Min</p>
-                        </div>
+        </div>
+        <div class="col">
+            <p class="h5 text-center m-3">Preset Value</p>
+            <div class="measurements-box min-max-line">
+                <div class="p-3 text-center">
+                    <div>
+                        <p>{{ preset_data[0][7] }}</p>
+                        <p class="h6">Min</p>
                     </div>
+                </div>
 
-                    <div class="p-3 text-center">
-                        <p>{{ preset_data[0][8] }}</p>
-                        <p class="h6">Max</p>
-                    </div>
+                <div class="p-3 text-center">
+                    <p>{{ preset_data[0][8] }}</p>
+                    <p class="h6">Max</p>
                 </div>
             </div>
         </div>
+      </div>
     </div>
     <div class="text-center">
         <a href="/edit_ph" class="btn btn-secondary my-4">Set Preset Range</a>
@@ -169,7 +169,7 @@
         <span class="measurements-title">Soil Moisture</span>
     </div>
     <div class="container px-5 my-4">
-        <div class="row gx-4">
+      <div class="row gx-4">
         <div class="col">
             <p class="h5 text-center m-3">Current</p>
                 <div class="measurements-box">
@@ -178,12 +178,10 @@
                     </div>
                 </div>
         </div>
-        </div>
+      </div>
     </div>
 </div>
 <hr class="m-3">
-<div id="temp-chart"></div>
-<div id="humidity-chart"></div>
 <a href="#" class="float">
     <span class="material-icons material-symbols-outlined my-float">arrow_upward</span>
 </a>

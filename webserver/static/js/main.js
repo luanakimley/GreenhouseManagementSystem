@@ -2,9 +2,6 @@ let aliveSecond = 0;
 let heartbeatRate = 1000;
 
 let myChannel = "greenhouse";
-let tempGraphChannel = "temp-graph"
-let humGraphChannel = "hum-graph"
-let pHGraphChannel = "ph-graph"
 let pubnub;
 
 const setupPubNub = () => {
@@ -49,43 +46,7 @@ const setupPubNub = () => {
 
 	// subscribe to a channel
 	pubnub.subscribe({
-		channels: [myChannel, tempGraphChannel, humGraphChannel, pHGraphChannel]
-	});
-
-	eon.chart({
-		pubnub: pubnub,
-		channels: [tempGraphChannel], // the pubnub channel for real time data
-	  	generate: {           // c3 chart object
-			bindto: '#temp-chart',
-	  	},
-	  	xType: 'custom',
-	  	xId: 'datetime'
-	});
-
-	eon.chart({
-	  	pubnub: pubnub,
-	  	channels: [humGraphChannel], // the pubnub channel for real time data
-	  	generate: {           // c3 chart object
-			bindto: '#humidity-chart',
-		  	axis: {
-				y: {
-					min: 10,
-					max: 100
-				}
-			}
-	  	},
-	  	xType: 'custom',
-	  	xId: 'datetime'
-	});
-
-	eon.chart({
-	  	pubnub: pubnub,
-	  	channels: [pHGraphChannel], // the pubnub channel for real time data
-	  	generate: {           // c3 chart object
-			bindto: '#ph-chart',
-	  	},
-	  	xType: 'custom',
-	  	xId: 'datetime'
+		channels: [myChannel]
 	});
 }
 

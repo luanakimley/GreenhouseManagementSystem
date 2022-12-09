@@ -5,7 +5,7 @@
     {% if messages %}
     {% for message in messages %}
     <script>
-        Swal.fire({
+      Swal.fire({
             title:"Login failed!",
             text: "{{ message }}",
             confirmButtonColor: "#31453D",
@@ -17,23 +17,23 @@
     {% endwith %}
 </div>
 <form name="login" action = "/login_action" method="post" class="my-auto">
-    <div class="d-grid gap-2 col-7 mx-auto text-center">
-        <span class="d-flex text-start mt-5 align-items-center gap-3">
-            <a class="back-button" href="/">
-                <span class="material-icons material-symbols-outlined">arrow_back</span>
-            </a>
-            <h2>Log In</h2>
-        </span>
-        <hr>
-        <div class="form-floating mb-3">
-            <input name="email" type="email" class="form-control" id="floatingInputEmail" placeholder="name@example.com" required>
-            <label for="floatingInputEmail">Email address</label>
-        </div>
-        <div class="form-floating">
-            <input name="password" type="password" class="form-control" id="floatingInputPassword" placeholder="Password" required>
-            <label for="floatingInputPassword">Password</label>
-        </div>
-        <input type="submit" class="btn btn-secondary p-2 mt-5" value="Log In">
+  <div class="d-grid gap-2 col-7 mx-auto text-center">
+    <span class="d-flex text-start mt-5 align-items-center gap-3">
+      <a class="back-button" href="/">
+        <span class="material-icons material-symbols-outlined">arrow_back</span>
+      </a>
+      <h2>Log In</h2>
+    </span>
+    <hr>
+    <div class="form-floating mb-3">
+      <input name="email" type="email" class="form-control" id="floatingInputEmail" placeholder="name@example.com" required>
+      <label for="floatingInputEmail">Email address</label>
     </div>
+    <div class="form-floating">
+      <input name="password" type="password" class="form-control" id="floatingInputPassword" placeholder="Password" required>
+      <label for="floatingInputPassword">Password</label>
+    </div>
+    <input type="submit" class="btn btn-secondary p-2 mt-5" value="Log In">
+  </div>
 </form>
 {% endblock %}
