@@ -5,7 +5,7 @@
     {% if messages %}
     {% for message in messages %}
     <script>
-      Swal.fire({
+        Swal.fire({
             title:"Sign up failed!",
             text: "{{ message }}",
             confirmButtonColor: "#31453D",
@@ -17,32 +17,32 @@
     {% endwith %}
 </div>
 <form onsubmit="return validateSignUpForm()" name="register" action="/signup_action" method="post" class="my-auto">
-  <div class="d-grid gap-2 col-7 mx-auto text-center">
-    <span class="d-flex text-start mt-5 align-items-center gap-3">
-      <a class="back-button" href="/">
-        <span class="material-icons material-symbols-outlined">arrow_back</span>
-      </a>
-      <h2>Sign Up</h2>
-    </span>
-    <hr>
-    <div class="form-floating mb-3">
-      <input name="email" type="email" class="form-control" id="floatingInputEmail" placeholder="name@example.com" required onfocusin="validateEmail()" onfocusout="validateEmail()">
-      <label id="floatingInputEmailLabel" for="floatingInputEmail">Email address</label>
+    <div class="d-grid gap-2 col-7 mx-auto text-center">
+        <span class="d-flex text-start mt-5 align-items-center gap-3">
+            <a class="back-button" href="/">
+                <span class="material-icons material-symbols-outlined">arrow_back</span>
+            </a>
+            <h2>Sign Up</h2>
+        </span>
+        <hr>
+        <div class="form-floating mb-3">
+            <input name="email" type="email" class="form-control" id="floatingInputEmail" placeholder="name@example.com" required onfocusin="validateEmail()" onfocusout="validateEmail()">
+            <label id="floatingInputEmailLabel" for="floatingInputEmail">Email address</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input name="username" type="text" class="form-control" id="floatingInputUsername" placeholder="name@example.com" required onfocusin="validateUsername()" onfocusout="validateUsername()">
+            <label id="floatingInputUsernameLabel" for="floatingInputUsername">Username</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input name="password" type="password" class="form-control" id="floatingInputPassword" placeholder="Password" required onfocusin="validatePassword()" onfocusout="validatePassword()">
+            <label id="floatingInputPasswordLabel" for="floatingInputPassword">Password</label>
+        </div>
+        <div class="form-floating">
+            <input name="confirm-password" type="password" class="form-control" id="floatingInputConfirmPassword" placeholder="Confirm password" required onfocusin="validateConfirmPassword()" onfocusout="validateConfirmPassword()">
+            <label id="floatingInputConfirmPasswordLabel" for="floatingInputConfirmPassword">Confirm password</label>
+        </div>
+        <input type="submit" class="btn btn-secondary p-2 mt-5" value="Sign Up">
     </div>
-    <div class="form-floating mb-3">
-      <input name="username" type="text" class="form-control" id="floatingInputUsername" placeholder="name@example.com" required onfocusin="validateUsername()" onfocusout="validateUsername()">
-      <label id="floatingInputUsernameLabel" for="floatingInputUsername">Username</label>
-    </div>
-    <div class="form-floating mb-3">
-      <input name="password" type="password" class="form-control" id="floatingInputPassword" placeholder="Password" required onfocusin="validatePassword()" onfocusout="validatePassword()">
-      <label id="floatingInputPasswordLabel" for="floatingInputPassword">Password</label>
-    </div>
-    <div class="form-floating">
-      <input name="confirm-password" type="password" class="form-control" id="floatingInputConfirmPassword" placeholder="Confirm password" required onfocusin="validateConfirmPassword()" onfocusout="validateConfirmPassword()">
-      <label id="floatingInputConfirmPasswordLabel" for="floatingInputConfirmPassword">Confirm password</label>
-    </div>
-    <input type="submit" class="btn btn-secondary p-2 mt-5" value="Sign Up">
-  </div>
 </form>
 <script src="../static/js/form_validation.js"></script>
 {% endblock %}
