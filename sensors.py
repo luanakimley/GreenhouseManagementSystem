@@ -22,15 +22,15 @@ load_dotenv()
 app = Flask(__name__)
 
 # MYSQL Database connection
-db = MySQLdb.connect(host="localhost", user="teomeo", passwd="12345678", db="gms")
+db = MySQLdb.connect(host="107.23.4.28", port=3306, user="teomeo", passwd="12345678Qwerty@", db="gms")
 
 # PubNub configuration
 pnconfig = PNConfiguration()
-#pnconfig.cipher_key = 'myCipherKey'
+# pnconfig.cipher_key = 'myCipherKey'
 pnconfig.subscribe_key = 'sub-c-5832596e-d4b6-4552-b2c0-a28a18fadd40'
 pnconfig.publish_key = 'pub-c-dab1a887-ba42-48aa-b99d-e42ecf3dedb3'
 pnconfig.user_id = "e6f98bfc-65f6-11ed-9022-0242ac120002"
-pnconfig.ssl = True # Encrypt the data when sent to PubNub
+pnconfig.ssl = True  # Encrypt the data when sent to PubNub
 pubnub = PubNub(pnconfig)
 
 alive = 0
@@ -87,7 +87,7 @@ p = GPIO.PWM(enB_p2, 1000)
 
 p.start(100)
 
-def read_ph():  # Function to read the Ph value
+def read_temp_ph():  # Function to read the temperature and humidity and Ph
     while True:
         buf = list()
         for i in range(10):  # Take 10 samples
@@ -96,12 +96,25 @@ def read_ph():  # Function to read the Ph value
         buf = buf[2:-2]  # skip the first two and the last two values
         avg = (sum(map(float, buf)) / 6)  # Get average value from remaining 6 values
         ph_val = (-7.119047 * avg) + (29.14023)  # Calculate the Ph value from the given voltage
-        publish(myChannel, {"Ph": round(ph_val, 2)}) # Publish the data to PubNub
-        print("Ph Buf: ", round(ph_val, 2))
-        time.sleep(2)
+        ph_val = round(ph_val, 2)
+        publish(myChannel, {"Ph": ph_val})  # Publish the data to PubNub
+        print("Ph Buf: ", ph_val)
+        # time.sleep(2)
+
+        # fetch the data from UCL table
+        uclid = 1
+        cur = db.cursor()
+        cur.execute("select * from ucl where ucl_id=%s", [uclid])
+        ucl = cur.fetchall()
+        uclid = ucl[0][0]
+        cultureid = ucl[0][1]
+        lifecycleid = ucl[0][2]
+        cultureid2 = 1
+        lifecycleid2 = 1
+        print
 
         cur = db.cursor()
-        cur.execute("select * from preset_data where presetData_id =%s ", [1])
+        cur.execute("select * from preset_data where culture_id =%s and lifecycle_id=%s", [cultureid2, lifecycleid2])
         preset_data = cur.fetchall()
 
         ph_min = preset_data[0][1]  # The min value will be taken from DB
@@ -129,25 +142,28 @@ def read_ph():  # Function to read the Ph value
             print("Pump2 off")
             time.sleep(5)
 
-
-def read_temp():  # Function to read the temperature and humidity
-    while True:
         try:
-            if GPIO.input(moist_pin): # If there is a signal in the pin the moisture is true
+            if GPIO.input(moist_pin):  # If there is a signal in the pin the moisture is true
                 value = "Dry"
-                publish(myChannel, {"Soil is": value}) # Publish the data to PubNub
+                publish(myChannel, {"Soil is": value})  # Publish the data to PubNub
                 # print("The soil is dry!")
             else:
                 value = "Wet"
-                #print("The soil is wet!")
+                # print("The soil is wet!")
                 publish(myChannel, {"Soil is": value})
             # Temperature and humidity data
-            temp = tmp_sensor.temperature # Store the data from the sensor in temp variable
+            temp = tmp_sensor.temperature  # Store the data from the sensor in temp variable
             temp_f = temp * (9 / 5) + 32
-            humidity = tmp_sensor.humidity # Store the data from the sensor in humidity variable
-            publish(myChannel, {"atmos": {"temp": temp, "hum": humidity}}) # Publish the data to PubNub
+            humidity = tmp_sensor.humidity  # Store the data from the sensor in humidity variable
+            publish(myChannel, {"atmos": {"temp": temp, "hum": humidity}})  # Publish the data to PubNub
             print("Temp: {:.1f} C / {:.1f} F    Humidity: {}% ".format(temp, temp_f, humidity))
 
+            cur = db.cursor()
+            # cur.execute('''insert into crop_data(temp, humidity, pH, moisture) values (%s, %s, %s, %s)''',
+            #               (temp, humidity, ph_val, value ))
+            cur.execute('''insert into crop_data(ucl_id,temp, humidity, pH, moisture) values (%s, %s, %s, %s, %s)''',
+                        (uclid, humidity, ph_val, value))
+            db.commit()
 
         except RuntimeError as error:
             print(error.args[0])
@@ -156,7 +172,8 @@ def read_temp():  # Function to read the temperature and humidity
         except Exception as error:
             tmp_sensor.exit()
             raise error
-        time.sleep(2)
+        # time.sleep(10)
+
 
 def beep(repeat):
     for i in range(0, repeat):
@@ -186,9 +203,12 @@ def motion_detection():
             print("Turning on the buzzer from index.html")
         time.sleep(2)
 
+
 # PubNub functions
 def publish(custom_channel, msg):
     pubnub.publish().channel(custom_channel).message(msg).pn_async(my_publish_callback)
+
+
 def my_publish_callback(envelope, status):
     # Check whether request successfully completed or not
     if not status.is_error():
@@ -197,6 +217,8 @@ def my_publish_callback(envelope, status):
         pass  # Handle message publish error. Check 'category' property to find out possible issue
         # because of which request did fail.
         # Request can be resent using: [status retry];
+
+
 class MySubscribeCallback(SubscribeCallback):
     def presence(self, pubnub, presence):
         pass  # handle incoming presence data
@@ -243,20 +265,23 @@ class MySubscribeCallback(SubscribeCallback):
             elif eventData[key[0]] is False:
                 data["alarm"] = False
 
+
 if __name__ == '__main__':
-    #Start PubNub Listener
+    # Start PubNub Listener
     pubnub.add_listener(MySubscribeCallback())
     pubnub.subscribe().channels(myChannel).execute()
     time.sleep(3)
 
-    #Start the threads
+    # Start the threads
     sensors_thread_1 = threading.Thread(target=motion_detection)
     sensors_thread_1.start()
-    #time.sleep(3)
+    time.sleep(3)
 
-    sensors_thread_2 = threading.Thread(target=read_temp)
+    sensors_thread_2 = threading.Thread(target=read_temp_ph)
     sensors_thread_2.start()
-    # time.sleep(3)
+    # time.sleep(10)
 
-    sensors_thread_3 = threading.Thread(target=read_ph)
-    sensors_thread_3.start()
+    # Run all the thread one after another
+    sensors_thread_1.join()
+    sensors_thread_2.join()
+
