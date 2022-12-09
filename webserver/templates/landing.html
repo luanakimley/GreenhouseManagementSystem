@@ -1,18 +1,18 @@
 {% extends "layout.html" %}
 {% block body %}
 <div class="h-100 d-flex align-items-center">
-  <div class="d-grid gap-2 col-7 mx-auto text-center">
-    <img class="logo mx-auto" src="/static/images/evergreens_logo.png" alt="Evergreens Logo">
-    <h2 class="mb-5">Welcome, {{ session.username }}!</h2>
-    Choose crop you are growing:
-    <form action="/culture_submit" method="post">
-      <select name="culture" class="form-select" aria-label="Select culture">
-        {% for culture in cultures %}
-        <option value="{{ culture[0] }}">{{ culture[1] }}</option>
-        {% endfor %}
-      </select>
-      <input type="submit" class="btn btn-secondary p-2 mt-5 w-50" value="Submit">
-    </form>
-  </div>
+    <div class="d-grid gap-2 col-7 mx-auto text-center">
+        <img class="logo mx-auto" src="/static/images/evergreens_logo.png" alt="Evergreens Logo">
+        <h2 class="mb-5">Welcome, {{ session.username }}!</h2>
+          Choose crop you are growing:
+        <form action="/culture_submit" method="post">
+        <select name="culture" class="form-select" aria-label="Select culture">
+            {% for culture in cultures %}
+                <option value="{{ culture[0] }}">{{ culture[1] }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" class="btn btn-secondary p-2 mt-5 w-50" value="Submit">
+      </form>
+    </div>
 </div>
 {% endblock %}
