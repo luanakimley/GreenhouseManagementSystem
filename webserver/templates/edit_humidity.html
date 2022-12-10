@@ -12,29 +12,29 @@
         Set Air Humidity Range
     </div>
     <div class="d-grid gap-2 col-7 mx-auto text-center">
-    <hr>
+        <hr>
         <span class="mb-4">Value must be between 0%-100%</span>
-    <div class="mb-3 row mx-auto">
-        <label for="inputMin" class="col-auto col-form-label">Minimum: </label>
-        <div class="col-auto">
-          <input name="humidityMin" type="number" min="0" max="100" class="form-control" id="inputMin" value="{{ humidity_range[0][0] }}" onfocusin="validateEditHumidityForm()" onfocusout="validateEditHumidityForm()" required>
+        <div class="mb-3 row mx-auto">
+            <label for="inputMin" class="col-auto col-form-label">Minimum: </label>
+            <div class="col-auto">
+                <input name="humidityMin" type="number" min="0" max="100" class="form-control" id="inputMin" value="{{ humidity_range[0][0] }}" onfocusin="validateEditHumidityForm()" onfocusout="validateEditHumidityForm()" required>
+            </div>
+            <span class="col-auto">
+                %
+            </span>
         </div>
-        <span class="col-auto">
-            %
-        </span>
-    </div>
-    <div class="mb-3 row mx-auto">
-        <label for="inputMax" class="col-auto col-form-label">Maximum: </label>
-        <div class="col-auto">
-            <input name="humidityMax" type="number" min="0" max="100" class="form-control" id="inputMax" value="{{ humidity_range[0][1] }}" onfocusin="validateEditHumidityForm()" onfocusout="validateEditHumidityForm()" required>
+        <div class="mb-3 row mx-auto">
+            <label for="inputMax" class="col-auto col-form-label">Maximum: </label>
+            <div class="col-auto">
+                <input name="humidityMax" type="number" min="0" max="100" class="form-control" id="inputMax" value="{{ humidity_range[0][1] }}" onfocusin="validateEditHumidityForm()" onfocusout="validateEditHumidityForm()" required>
+            </div>
+            <span class="col-auto">
+                %
+            </span>
         </div>
-        <span class="col-auto">
-            %
-        </span>
-    </div>
         <span id="humidityErrorMessage" class="mt-3 text-danger"></span>
-    <input type="submit" class="btn btn-secondary p-2 mt-5" value="Confirm">
-  </div>
+        <input type="submit" class="btn btn-secondary p-2 mt-5" value="Confirm">
+    </div>
 </form>
 <form action="/reset_default_humidity">
     <div class="text-center mt-5">

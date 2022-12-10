@@ -12,28 +12,28 @@
         Set Air Temperature Range
     </div>
     <div class="d-grid gap-2 col-7 mx-auto text-center">
-    <hr>
-    <div class="mb-3 row mx-auto">
-        <label for="inputMin" class="col-auto col-form-label">Minimum: </label>
-        <div class="col-auto">
-          <input name="tempMin" type="number" step="0.1" class="form-control" id="inputMin" value="{{ tempRange[0][0] }}" onfocusin="validateEditTemperatureForm()" onfocusout="validateEditTemperatureForm()" required>
+        <hr>
+        <div class="mb-3 row mx-auto">
+            <label for="inputMin" class="col-auto col-form-label">Minimum: </label>
+            <div class="col-auto">
+                <input name="tempMin" type="number" step="0.1" class="form-control" id="inputMin" value="{{ tempRange[0][0] }}" onfocusin="validateEditTemperatureForm()" onfocusout="validateEditTemperatureForm()" required>
+            </div>
+            <span class="col-auto">
+                °C
+            </span>
         </div>
-        <span class="col-auto">
-            °C
-        </span>
-    </div>
-    <div class="mb-3 row mx-auto">
-        <label for="inputMax" class="col-auto col-form-label">Maximum: </label>
-        <div class="col-auto">
-            <input name="tempMax" type="number" step="0.1" class="form-control" id="inputMax" value="{{ tempRange[0][1] }}" onfocusin="validateEditTemperatureForm()" onfocusout="validateEditTemperatureForm()" required>
+        <div class="mb-3 row mx-auto">
+            <label for="inputMax" class="col-auto col-form-label">Maximum: </label>
+            <div class="col-auto">
+                <input name="tempMax" type="number" step="0.1" class="form-control" id="inputMax" value="{{ tempRange[0][1] }}" onfocusin="validateEditTemperatureForm()" onfocusout="validateEditTemperatureForm()" required>
+            </div>
+            <span class="col-auto">
+                °C
+            </span>
         </div>
-        <span class="col-auto">
-            °C
-        </span>
-    </div>
         <span id="tempErrorMessage" class="mt-3 text-danger"></span>
-    <input type="submit" class="btn btn-secondary p-2 mt-5" value="Confirm">
-  </div>
+        <input type="submit" class="btn btn-secondary p-2 mt-5" value="Confirm">
+    </div>
 </form>
 <form action="/reset_default_temp">
     <div class="text-center mt-5">
