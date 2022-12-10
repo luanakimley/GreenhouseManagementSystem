@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block body %}
+<script src="static/js/main.js"></script>
+<div class="header">
+    <a class="back-button-edit" href="/">
+        <span class="material-icons material-symbols-outlined mb-3">arrow_back</span>
+    </a>
+    <h1>{{ culture_name }}</h1>
+    <p><strong>Lifecycle: </strong>{{ lifecycle_name }}</p>
+</div>
+<div class="range-form-title h3 text-center mt-4">
+    Air Temperature Graph
+</div>
+<div class="d-grid gap-2 col-7 mx-auto text-center">
+    <hr>
+    <div id="temp-graph"></div>
+</div>
+{% endblock %}

@@ -338,5 +338,41 @@ def notifications():
     return render_template("notifications.html")
 
 
+@app.route("/temp_graph")
+def temp_graph():
+    cursor = mysql.connection.cursor()
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
+                   [session["users_id"]])
+    culture_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
+    lifecycle_name = cursor.fetchall()[0][0]
+    return render_template("temp_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name)
+
+
+@app.route("/humidity_graph")
+def humidity_graph():
+    cursor = mysql.connection.cursor()
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
+                   [session["users_id"]])
+    culture_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
+    lifecycle_name = cursor.fetchall()[0][0]
+    return render_template("humidity_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name)
+
+
+@app.route("/ph_graph")
+def ph_graph():
+    cursor = mysql.connection.cursor()
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
+                   [session["users_id"]])
+    culture_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
+    lifecycle_name = cursor.fetchall()[0][0]
+    return render_template("ph_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name)
+
+
 if __name__ == '__main__':
     app.run()

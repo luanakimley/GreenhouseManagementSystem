@@ -1,7 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
 <script src="static/js/main.js"></script>
-<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.0.js"></script>
 <div class="header">
     <div class="position-absolute notifications-icon">
         <a href="/notifications" class="btn btn-light position-relative">
@@ -79,8 +78,13 @@
             </div>
         </div>
     </div>
-    <div class="text-center">
-        <a href="/edit_temp" class="btn btn-secondary my-4">Set Preset Range</a>
+    <div class="row justify-content-center mt-5">
+        <div class="col-2">
+            <a href="/edit_temp" class="w-100 btn btn-secondary my-4">Set Preset Range</a>
+        </div>
+        <div class="col-2">
+            <a href="/temp_graph" class="w-100 btn btn-secondary my-4">View Graph</a>
+        </div>
     </div>
 </div>
 <hr class="m-3">
@@ -117,8 +121,13 @@
             </div>
         </div>
     </div>
-    <div class="text-center">
-        <a href="/edit_humidity" class="btn btn-secondary my-4">Set Preset Range</a>
+    <div class="row justify-content-center mt-5">
+        <div class="col-2">
+            <a href="/edit_humidity" class="w-100 btn btn-secondary my-4">Set Preset Range</a>
+        </div>
+        <div class="col-2">
+            <a href="/humidity_graph" class="w-100 btn btn-secondary my-4">View Graph</a>
+        </div>
     </div>
 </div>
 <hr class="m-3">
@@ -155,8 +164,13 @@
             </div>
         </div>
     </div>
-    <div class="text-center">
-        <a href="/edit_ph" class="btn btn-secondary my-4">Set Preset Range</a>
+    <div class="row justify-content-center mt-5">
+        <div class="col-2">
+            <a href="/edit_ph" class="w-100 btn btn-secondary my-4">Set Preset Range</a>
+        </div>
+        <div class="col-2">
+            <a href="/ph_graph" class="w-100 btn btn-secondary my-4">View Graph</a>
+        </div>
     </div>
 </div>
 <hr class="m-3" id="moisture">
