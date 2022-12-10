@@ -365,7 +365,16 @@ def temp_graph():
 
     cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
     lifecycle_name = cursor.fetchall()[0][0]
-    return render_template("temp_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name)
+
+    # TODO: determine limit
+    cursor.execute("select creation_datetime, temp from crop_data where ucl_id=%s order by crops_id desc limit 50",
+                   [session["UCL"][0][0]])
+    temp_graph_data = cursor.fetchall()
+
+    cursor.execute("select tempMin, tempMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
+    range = cursor.fetchall()
+
+    return render_template("temp_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name, temp_graph_data=temp_graph_data, range=range)
 
 
 @app.route("/humidity_graph")
@@ -377,7 +386,16 @@ def humidity_graph():
 
     cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
     lifecycle_name = cursor.fetchall()[0][0]
-    return render_template("humidity_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name)
+
+    # TODO: determine limit
+    cursor.execute("select creation_datetime, humidity from crop_data where ucl_id=%s order by crops_id desc limit 50",
+                   [session["UCL"][0][0]])
+    humidity_graph_data = cursor.fetchall()
+
+    cursor.execute("select humidityMin, humidityMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
+    range = cursor.fetchall()
+
+    return render_template("humidity_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name, humidity_graph_data=humidity_graph_data, range=range)
 
 
 @app.route("/ph_graph")
@@ -389,7 +407,16 @@ def ph_graph():
 
     cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
     lifecycle_name = cursor.fetchall()[0][0]
-    return render_template("ph_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name)
+
+    # TODO: determine limit
+    cursor.execute("select creation_datetime, pH from crop_data where ucl_id=%s order by crops_id desc limit 50",
+                   [session["UCL"][0][0]])
+    ph_graph_data = cursor.fetchall()
+
+    cursor.execute("select pHMin, pHMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
+    range = cursor.fetchall()
+
+    return render_template("ph_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name, ph_graph_data=ph_graph_data, range=range)
 
 
 def publish(custom_channel, msg):
