@@ -143,31 +143,31 @@ h1, h2, h3, h4, h5, h6 {
         display: inline-flex;
         vertical-align: middle;
     }
-
-    .measurements-icon-title {
-        color: $brown;
-        text-align: center;
-    }
-
-    .measurements-title {
-        font-family: $body-font;
-        font-weight: bold;
-    }
-
-    .measurements-box {
-        display: flex;
-        justify-content: space-evenly;
-        margin: 5px 0;
-        border: 3px solid $light-green;
-        border-radius: 25px;
-    }
-
-    .min-max-line {
-        background: linear-gradient($light-green, $light-green) no-repeat center/3px 100%;
-    }
 }
 
-.float{
+.measurements-icon-title {
+    color: $brown;
+    text-align: center;
+}
+
+.measurements-title {
+    font-family: $body-font;
+    font-weight: bold;
+}
+
+.measurements-box {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 5px 0;
+    border: 3px solid $light-green;
+    border-radius: 25px;
+}
+
+.min-max-line {
+    background: linear-gradient($light-green, $light-green) no-repeat center/3px 100%;
+}
+
+.float {
 	position: fixed;
 	width: 60px;
 	height: 60px;

@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
+<script src="static/js/main.js"></script>
 <div class="header">
     <a class="back-button-edit" href="/">
         <span class="material-icons material-symbols-outlined mb-3">arrow_back</span>
@@ -12,6 +13,85 @@
 </div>
 <div class="d-grid gap-2 col-7 mx-auto text-center">
     <hr>
-    <div id="humidity-graph"></div>
 </div>
+<div id="humidity-graph"></div>
+<div class="range-form-title h3 text-center mt-5">
+    Statistics
+</div>
+<div class="d-grid gap-2 col-7 mx-auto text-center">
+    <hr>
+</div>
+<div class="container px-5 my-4">
+    <div class="row gx-4">
+        <div class="col">
+            <div class="measurements-box">
+                <div class="p-3 text-center">
+                    <p class="h6">Average</p>
+                    <p class="h3" id="average">-%</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="measurements-box min-max-line">
+                <div class="p-3 text-center">
+                    <div>
+                        <p class="h6">Min</p>
+                        <p class="h3" id="min">-%</p>
+                    </div>
+                </div>
+                <div class="p-3 text-center">
+                    <p class="h6">Max</p>
+                    <p class="h3" id="max">-%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let humidity_graph_data = JSON.parse('{{ humidity_graph_data | tojson }}');
+    humidity = humidity_graph_data.flat().filter(data => typeof data === "number")
+    humidity_data = ["Humidity"].concat(humidity)
+    date_recorded = ["x"].concat(humidity_graph_data.flat()
+        .filter(data => typeof data !== "number")
+        .map(data => Date.parse(data)))
+
+    const average = humidity.reduce((a, b) => a + b, 1) / humidity.length
+    document.getElementById("average").innerText = average.toFixed(2).toString() + "%"
+
+    const [min, max] = humidity.reduce(([prevMin,prevMax], curr) =>
+         [Math.min(prevMin, curr), Math.max(prevMax, curr)], [Infinity, -Infinity]);
+
+    document.getElementById("min").innerText = min.toString() + "%"
+    document.getElementById("max").innerText = max.toString() + "%"
+
+    let range = JSON.parse('{{ range | tojson }}').flat()
+
+    c3.generate({
+        bindto: '#humidity-graph',
+        data: {
+            x: 'x',
+            columns: [humidity_data, date_recorded]
+        },
+        axis: {
+            x: {
+                type: 'timeseries',
+                tick: {
+                    format: '%d-%m-%Y %H:%M'
+                }
+            },
+            y: {
+                min: 10,
+                max: 100,
+            }
+        },
+        grid: {
+            y: {
+                lines: [
+                    {value: range[0], text: 'Expected min humidity', position: 'middle'},
+                    {value: range[1], text: 'Expected max humidity', position: 'middle'}
+                ]
+            }
+        }
+    })
+</script>
 {% endblock %}

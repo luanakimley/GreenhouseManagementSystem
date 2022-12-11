@@ -35,6 +35,7 @@ pubnub = PubNub(pnconfig)
 
 alive = 0
 data = {}
+ucl = None
 
 Session(app)
 mysql = MySQL(app)
@@ -43,6 +44,9 @@ PIR_pin = 23
 Buzzer_pin = 24
 
 myChannel = "greenhouse"
+tempGraphChannel = "temp-graph"
+humGraphChannel = "hum-graph"
+pHGraphChannel = "ph-graph"
 sensorList = ["buzzer", "temp", "ph", "moisture"]
 
 # GPIO SETUP Motion detection and buzzer pins output
@@ -87,6 +91,7 @@ p = GPIO.PWM(enB_p2, 1000)
 
 p.start(100)
 
+
 def read_temp_ph():  # Function to read the temperature and humidity and Ph
     while True:
         buf = list()
@@ -98,6 +103,9 @@ def read_temp_ph():  # Function to read the temperature and humidity and Ph
         ph_val = (-7.119047 * avg) + (29.14023)  # Calculate the Ph value from the given voltage
         ph_val = round(ph_val, 2)
         publish(myChannel, {"Ph": ph_val})  # Publish the data to PubNub
+
+        # Publish data to graphs channel to show real time graphs
+        publish(pHGraphChannel, {"eon": {"datetime": round(time.time() * 1000), "pH": ph_val}})
         print("Ph Buf: ", ph_val)
         # time.sleep(2)
 
@@ -111,7 +119,6 @@ def read_temp_ph():  # Function to read the temperature and humidity and Ph
         lifecycleid = ucl[0][2]
         cultureid2 = 1
         lifecycleid2 = 1
-        print
 
         cur = db.cursor()
         cur.execute("select * from preset_data where culture_id =%s and lifecycle_id=%s", [cultureid2, lifecycleid2])
@@ -156,6 +163,10 @@ def read_temp_ph():  # Function to read the temperature and humidity and Ph
             temp_f = temp * (9 / 5) + 32
             humidity = tmp_sensor.humidity  # Store the data from the sensor in humidity variable
             publish(myChannel, {"atmos": {"temp": temp, "hum": humidity}})  # Publish the data to PubNub
+
+            # Publish data to graphs channel to show real time graphs
+            publish(humGraphChannel, {"eon": {"datetime": round(time.time() * 1000), "Humidity": humidity}})
+            publish(tempGraphChannel, {"eon": {"datetime": round(time.time() * 1000), "Temperature": temp}})
             print("Temp: {:.1f} C / {:.1f} F    Humidity: {}% ".format(temp, temp_f, humidity))
 
             cur = db.cursor()
@@ -183,6 +194,8 @@ def beep(repeat):
             GPIO.output(Buzzer_pin, False)
             time.sleep(0.001)
         time.sleep(0.02)
+
+
 def motion_detection():
     data["alarm"] = False
     print("sensors started")
@@ -193,6 +206,7 @@ def motion_detection():
             beep(4)
             trigger = True
             publish(myChannel, {"motion": "Yes"})
+            # TODO: insert to notifications table in database
             time.sleep(1)
             data["motion"] = 1
         elif trigger:
@@ -249,6 +263,9 @@ class MySubscribeCallback(SubscribeCallback):
             key = list(msg.keys())
             if key[0] == "event":  # {"event":{"sensor_name" : True}
                 self.handleEvent(msg)
+
+            global ucl
+            ucl = msg["ucl"]
         except Exception as e:
             print("Received: ", message.message)
             print(e)
@@ -284,4 +301,3 @@ if __name__ == '__main__':
     # Run all the thread one after another
     sensors_thread_1.join()
     sensors_thread_2.join()
-

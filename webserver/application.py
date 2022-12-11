@@ -3,6 +3,9 @@ from flask import Flask, redirect, render_template, request, session, flash
 from flask_session import Session
 from flask_mysqldb import MySQL
 import bcrypt
+from pubnub.pnconfiguration import PNConfiguration
+from pubnub.pubnub import PubNub
+
 
 from dotenv import load_dotenv
 import os
@@ -10,6 +13,15 @@ import os
 load_dotenv()
 
 app = Flask(__name__)
+
+# PubNub configuration
+pnconfig = PNConfiguration()
+# pnconfig.cipher_key = 'myCipherKey'
+pnconfig.subscribe_key = 'sub-c-5832596e-d4b6-4552-b2c0-a28a18fadd40'
+pnconfig.publish_key = 'pub-c-dab1a887-ba42-48aa-b99d-e42ecf3dedb3'
+pnconfig.user_id = "e6f98bfc-65f6-11ed-9022-0242ac120002"
+pnconfig.ssl = True  # Encrypt the data when sent to PubNub
+pubnub = PubNub(pnconfig)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')
@@ -22,6 +34,8 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 mysql = MySQL(app)
+
+myChannel = "greenhouse"
 
 
 @app.route("/")
@@ -68,6 +82,7 @@ def login_action():
             user_culture_lifecycle = cursor.fetchall()
 
             session["UCL"] = user_culture_lifecycle
+            publish(myChannel, user_culture_lifecycle)
             return redirect("/")
         else:
             flash("Wrong email address or password")
@@ -144,6 +159,7 @@ def culture_submit():
     user_culture_lifecycle = cursor.fetchall()
 
     session["UCL"] = user_culture_lifecycle
+    publish(myChannel, user_culture_lifecycle)
 
     cursor.execute("select * from preset_data where culture_id=%s and lifecycle_id=%s",
                    [session["UCL"][0][2], session["UCL"][0][3]])
@@ -316,6 +332,7 @@ def lifecycle(lifecycle_id):
         mysql.connection.commit()
         cursor.execute("select * from ucl where users_id=%s and culture_id=%s and lifecycle_id=%s", [session["UCL"][0][1], session["UCL"][0][2], lifecycle_id])
         session["UCL"] = cursor.fetchall()
+        publish(myChannel, cursor.fetchall())
 
         cursor.execute("select * from preset_data where culture_id=%s and lifecycle_id=%s", [session["UCL"][0][2], session["UCL"][0][3]])
         preset_data = cursor.fetchall()
@@ -330,6 +347,7 @@ def lifecycle(lifecycle_id):
         return redirect("/monitoring")
 
     session["UCL"] = ucl
+    publish(myChannel, ucl)
     return redirect("/monitoring")
 
 
@@ -347,7 +365,16 @@ def temp_graph():
 
     cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
     lifecycle_name = cursor.fetchall()[0][0]
-    return render_template("temp_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name)
+
+    # TODO: determine limit
+    cursor.execute("select creation_datetime, temp from crop_data where ucl_id=%s order by crops_id desc limit 50",
+                   [session["UCL"][0][0]])
+    temp_graph_data = cursor.fetchall()
+
+    cursor.execute("select tempMin, tempMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
+    range = cursor.fetchall()
+
+    return render_template("temp_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name, temp_graph_data=temp_graph_data, range=range)
 
 
 @app.route("/humidity_graph")
@@ -359,7 +386,16 @@ def humidity_graph():
 
     cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
     lifecycle_name = cursor.fetchall()[0][0]
-    return render_template("humidity_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name)
+
+    # TODO: determine limit
+    cursor.execute("select creation_datetime, humidity from crop_data where ucl_id=%s order by crops_id desc limit 50",
+                   [session["UCL"][0][0]])
+    humidity_graph_data = cursor.fetchall()
+
+    cursor.execute("select humidityMin, humidityMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
+    range = cursor.fetchall()
+
+    return render_template("humidity_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name, humidity_graph_data=humidity_graph_data, range=range)
 
 
 @app.route("/ph_graph")
@@ -371,7 +407,30 @@ def ph_graph():
 
     cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
     lifecycle_name = cursor.fetchall()[0][0]
-    return render_template("ph_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name)
+
+    # TODO: determine limit
+    cursor.execute("select creation_datetime, pH from crop_data where ucl_id=%s order by crops_id desc limit 50",
+                   [session["UCL"][0][0]])
+    ph_graph_data = cursor.fetchall()
+
+    cursor.execute("select pHMin, pHMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
+    range = cursor.fetchall()
+
+    return render_template("ph_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name, ph_graph_data=ph_graph_data, range=range)
+
+
+def publish(custom_channel, msg):
+    pubnub.publish().channel(custom_channel).message(msg).pn_async(my_publish_callback)
+
+
+def my_publish_callback(envelope, status):
+    # Check whether request successfully completed or not
+    if not status.is_error():
+        pass  # Message successfully published to specified channel.
+    else:
+        pass  # Handle message publish error. Check 'category' property to find out possible issue
+        # because of which request did fail.
+        # Request can be resent using: [status retry];
 
 
 if __name__ == '__main__':
