@@ -17,9 +17,9 @@ app = Flask(__name__)
 # PubNub configuration
 pnconfig = PNConfiguration()
 # pnconfig.cipher_key = 'myCipherKey'
-pnconfig.subscribe_key = 'sub-c-5832596e-d4b6-4552-b2c0-a28a18fadd40'
-pnconfig.publish_key = 'pub-c-dab1a887-ba42-48aa-b99d-e42ecf3dedb3'
-pnconfig.user_id = "e6f98bfc-65f6-11ed-9022-0242ac120002"
+pnconfig.subscribe_key = os.getenv('PUBNUB_SUBSCRIBE_KEY')
+pnconfig.publish_key = os.getenv('PUBNUB_PUBLISH_KEY')
+pnconfig.user_id = os.getenv('PUBNUB_USERID')
 pnconfig.ssl = True  # Encrypt the data when sent to PubNub
 pubnub = PubNub(pnconfig)
 
@@ -36,6 +36,15 @@ Session(app)
 mysql = MySQL(app)
 
 myChannel = "greenhouse"
+
+
+def login_required(function):
+    def wrapper(*args, **kwargs):
+        if "users_id" not in session:
+            return abort(401)
+        else:
+            return function()
+    return wrapper
 
 
 @app.route("/")
@@ -175,6 +184,7 @@ def culture_submit():
 
 
 @app.route("/monitoring")
+@login_required
 def monitoring():
     cursor = mysql.connection.cursor()
     cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)", [session["users_id"]])
