@@ -65,10 +65,10 @@ FOREIGN KEY (ucl_id) REFERENCES ucl(ucl_id));
 
 create table notification (notifications_id int NOT NULL AUTO_INCREMENT,
 description varchar(125),
-image BLOB,
+icon varchar(100),
 PRIMARY KEY (notifications_id));
 
-create table user_notification (notifications_id int NOT NULL AUTO_INCREMENT,
+create table user_notification (notifications_id int NOT NULL,
 users_id int NOT NULL,
 notification_dateTime DATETIME,
 PRIMARY KEY (notifications_id, users_id),
@@ -145,15 +145,17 @@ INSERT INTO crop_data VALUES (7, 1, "2022-11-13 15:00:00", 20, 66, 7.0, "Wet");
 
 INSERT INTO data_range VALUES (1, 1, "2022-11-12 15:00:00", 15, 20, 70, 80, 6.0, 7.0);
 
-INSERT INTO notification VALUES (1, "Your crop needs watering", "warning1.png");
-INSERT INTO notification VALUES (2, "Your crop is too warm", "warning2.png");
-INSERT INTO notification VALUES (3, "Your crop needs more pH solution", "warning3.png");
-INSERT INTO notification VALUES (4, "Your crop is too cold", "warning4.png");
+INSERT INTO notification VALUES (1, "Your crop needs watering", "water");
+INSERT INTO notification VALUES (2, "Your crop is too warm", "device_thermostat");
+INSERT INTO notification VALUES (3, "Your crop needs more pH solution", "water_ph");
+INSERT INTO notification VALUES (4, "Your crop is too cold", "device_thermostat");
+INSERT INTO notification VALUES (5, "Motion detected near crops", "directions_run");
 
 INSERT INTO user_notification VALUES (1, 1, "2022-10-08 10:45:00");
-INSERT INTO user_notification VALUES (1, 2, "2022-11-09 12:45:56");
-INSERT INTO user_notification VALUES (1, 3, "2022-11-10 12:25:12");
-INSERT INTO user_notification VALUES (1, 4, "2022-12-11 11:45:16");
+INSERT INTO user_notification VALUES (2, 1, "2022-11-09 12:45:56");
+INSERT INTO user_notification VALUES (3, 1, "2022-11-10 12:25:12");
+INSERT INTO user_notification VALUES (4, 1, "2022-12-11 11:45:16");
+INSERT INTO user_notification VALUES (5, 1, "2022-12-12 12:16:09");
 
 /*Creating a view to find out which are under or over their min/max*/
 Create view Crops_Over_Under_Min_Max as Select p.crops_id, p.temp, pd.tempMin, pd.tempMax, p.humidity, pd.humidityMin, pd.humidityMax, p.pH, pd.pHMin, pd.pHMax 
