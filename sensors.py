@@ -44,9 +44,6 @@ PIR_pin = 23
 Buzzer_pin = 24
 
 myChannel = "greenhouse"
-tempGraphChannel = "temp-graph"
-humGraphChannel = "hum-graph"
-pHGraphChannel = "ph-graph"
 sensorList = ["buzzer", "temp", "ph", "moisture"]
 
 # GPIO SETUP Motion detection and buzzer pins output
@@ -104,8 +101,6 @@ def read_temp_ph():  # Function to read the temperature and humidity and Ph
         ph_val = round(ph_val, 2)
         publish(myChannel, {"Ph": ph_val})  # Publish the data to PubNub
 
-        # Publish data to graphs channel to show real time graphs
-        publish(pHGraphChannel, {"eon": {"datetime": round(time.time() * 1000), "pH": ph_val}})
         print("Ph Buf: ", ph_val)
         # time.sleep(2)
 
@@ -163,10 +158,6 @@ def read_temp_ph():  # Function to read the temperature and humidity and Ph
             temp_f = temp * (9 / 5) + 32
             humidity = tmp_sensor.humidity  # Store the data from the sensor in humidity variable
             publish(myChannel, {"atmos": {"temp": temp, "hum": humidity}})  # Publish the data to PubNub
-
-            # Publish data to graphs channel to show real time graphs
-            publish(humGraphChannel, {"eon": {"datetime": round(time.time() * 1000), "Humidity": humidity}})
-            publish(tempGraphChannel, {"eon": {"datetime": round(time.time() * 1000), "Temperature": temp}})
             print("Temp: {:.1f} C / {:.1f} F    Humidity: {}% ".format(temp, temp_f, humidity))
 
             cur = db.cursor()
