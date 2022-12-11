@@ -1,6 +1,3 @@
-let aliveSecond = 0;
-let heartbeatRate = 1000;
-
 let myChannel = "greenhouse";
 let pubnub;
 
