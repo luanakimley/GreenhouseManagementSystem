@@ -353,7 +353,13 @@ def lifecycle(lifecycle_id):
 
 @app.route("/notifications")
 def notifications():
-    return render_template("notifications.html")
+    cursor = mysql.connection.cursor()
+    cursor.execute("select description, icon, notification_dateTime from notification n, user_notification un where n.notifications_id = un.notifications_id and users_id=%s",
+                   [session["users_id"]])
+    notifications_list = cursor.fetchall()
+    print(notifications_list)
+
+    return render_template("notifications.html", notifications=notifications_list)
 
 
 @app.route("/temp_graph")
