@@ -1,5 +1,5 @@
 import MySQLdb
-from flask import Flask, redirect, render_template, request, session, flash
+from flask import Flask, redirect, render_template, request, session, flash, abort
 from flask_session import Session
 from flask_mysqldb import MySQL
 import bcrypt
@@ -91,7 +91,7 @@ def login_action():
             user_culture_lifecycle = cursor.fetchall()
 
             session["UCL"] = user_culture_lifecycle
-            publish(myChannel, user_culture_lifecycle)
+            publish(myChannel, {'ucl': user_culture_lifecycle[0][0]})
             return redirect("/")
         else:
             flash("Wrong email address or password")
@@ -168,7 +168,7 @@ def culture_submit():
     user_culture_lifecycle = cursor.fetchall()
 
     session["UCL"] = user_culture_lifecycle
-    publish(myChannel, user_culture_lifecycle)
+    publish(myChannel, {'ucl': user_culture_lifecycle[0][0]})
 
     cursor.execute("select * from preset_data where culture_id=%s and lifecycle_id=%s",
                    [session["UCL"][0][2], session["UCL"][0][3]])
@@ -357,7 +357,7 @@ def lifecycle(lifecycle_id):
         return redirect("/monitoring")
 
     session["UCL"] = ucl
-    publish(myChannel, ucl)
+    publish(myChannel, {'ucl': ucl[0][0]})
     return redirect("/monitoring")
 
 
@@ -367,7 +367,6 @@ def notifications():
     cursor.execute("select description, icon, notification_dateTime from notification n, user_notification un where n.notifications_id = un.notifications_id and users_id=%s",
                    [session["users_id"]])
     notifications_list = cursor.fetchall()
-    print(notifications_list)
 
     return render_template("notifications.html", notifications=notifications_list)
 
