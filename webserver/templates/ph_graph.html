@@ -56,7 +56,7 @@
         .filter(data => typeof data !== "number")
         .map(data => Date.parse(data)))
 
-    const average = ph.reduce((a, b) => a + b, 1) / ph.length
+    const average = ph.reduce((a, b) => a + b, 0) / ph.length
     document.getElementById("average").innerText = average.toFixed(2).toString()
 
     const [min, max] = ph.reduce(([prevMin,prevMax], curr) =>

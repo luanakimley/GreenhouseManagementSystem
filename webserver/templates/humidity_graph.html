@@ -55,7 +55,7 @@
         .filter(data => typeof data !== "number")
         .map(data => Date.parse(data)))
 
-    const average = humidity.reduce((a, b) => a + b, 1) / humidity.length
+    const average = humidity.reduce((a, b) => a + b, 0) / humidity.length
     document.getElementById("average").innerText = average.toFixed(2).toString() + "%"
 
     const [min, max] = humidity.reduce(([prevMin,prevMax], curr) =>
