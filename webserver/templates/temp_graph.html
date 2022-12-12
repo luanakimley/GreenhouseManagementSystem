@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block body %}
-<script src="static/js/main.js"></script>
 <div class="header">
     <a class="back-button-edit" href="/">
         <span class="material-icons material-symbols-outlined mb-3">arrow_back</span>
@@ -13,6 +12,86 @@
 </div>
 <div class="d-grid gap-2 col-7 mx-auto text-center">
     <hr>
-    <div id="temp-graph"></div>
 </div>
+<div id="temp-graph"></div>
+<div class="range-form-title h3 text-center mt-5">
+    Statistics
+</div>
+<div class="d-grid gap-2 col-7 mx-auto text-center">
+    <hr>
+</div>
+<div class="container px-5 my-4">
+    <div class="row gx-4">
+        <div class="col">
+            <div class="measurements-box">
+                <div class="p-3 text-center">
+                    <p class="h6">Average</p>
+                    <p class="h3" id="average">-°C</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="measurements-box min-max-line">
+                <div class="p-3 text-center">
+                    <div>
+                        <p class="h6">Min</p>
+                        <p class="h3" id="min">-°C</p>
+                    </div>
+                </div>
+                <div class="p-3 text-center">
+                    <p class="h6">Max</p>
+                    <p class="h3" id="max">-°C</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let temp_graph_data = JSON.parse('{{ temp_graph_data | tojson }}');
+    temp = temp_graph_data.flat().filter(data => typeof data === "number")
+    temp_data = ["Temperature"].concat(temp)
+    date_recorded = ["x"].concat(temp_graph_data.flat()
+        .filter(data => typeof data !== "number")
+        .map(data => Date.parse(data)))
+
+    const average = temp.reduce((a, b) => a + b, 0) / temp.length
+    document.getElementById("average").innerText = average.toFixed(2).toString() + "°C"
+
+    const [min, max] = temp.reduce(([prevMin,prevMax], curr) =>
+         [Math.min(prevMin, curr), Math.max(prevMax, curr)], [Infinity, -Infinity]);
+
+    document.getElementById("min").innerText = min.toString() + "°C"
+    document.getElementById("max").innerText = max.toString() + "°C"
+
+    let range = JSON.parse('{{ range | tojson }}').flat()
+
+    c3.generate({
+        bindto: '#temp-graph',
+        data: {
+            x: 'x',
+            columns: [temp_data, date_recorded]
+        },
+        axis: {
+            x: {
+                type: 'timeseries',
+                tick: {
+                    count: 8,
+                    format: '%d-%m-%Y %H:%M',
+                }
+            },
+            y: {
+                min: range[0] - 3,
+                max: range[1] + 3
+            }
+        },
+        grid: {
+            y: {
+                lines: [
+                    {value: range[0], text: 'Expected min temperature', position: 'middle'},
+                    {value: range[1], text: 'Expected max temperature', position: 'middle'}
+                ]
+            }
+        }
+    })
+</script>
 {% endblock %}

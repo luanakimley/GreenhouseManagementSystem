@@ -49,9 +49,6 @@ Buzzer_pin = 24
 tmp_sensor = adafruit_dht.DHT11(board.D27)
 
 myChannel = "greenhouse"
-tempGraphChannel = "temp-graph"
-humGraphChannel = "hum-graph"
-pHGraphChannel = "ph-graph"
 sensorList = ["buzzer", "temp", "ph", "moisture"]
 
 # GPIO SETUP Motion detection and buzzer pins output
@@ -159,7 +156,6 @@ def read_temp_ph():  # Function to read the temperature and humidity and Ph
             temp_f = temp * (9 / 5) + 32
             humidity = tmp_sensor.humidity  # Store the data from the sensor in humidity variable
             publish(myChannel, {"atmos": {"temp": temp, "hum": humidity}})  # Publish the data to PubNub
-
             print("Temp: {:.1f} C / {:.1f} F    Humidity: {}% ".format(temp, temp_f, humidity))
 
             if ucl:

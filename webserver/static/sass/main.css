@@ -118,22 +118,26 @@ h1, h2, h3, h4, h5, h6 {
   display: inline-flex;
   vertical-align: middle;
 }
-.measurements .measurements-icon-title {
+
+.measurements-icon-title {
   color: #61513C;
   text-align: center;
 }
-.measurements .measurements-title {
+
+.measurements-title {
   font-family: "Quattrocento Sans", sans-serif;
   font-weight: bold;
 }
-.measurements .measurements-box {
+
+.measurements-box {
   display: flex;
   justify-content: space-evenly;
   margin: 5px 0;
   border: 3px solid #8db8a7;
   border-radius: 25px;
 }
-.measurements .min-max-line {
+
+.min-max-line {
   background: linear-gradient(#8db8a7, #8db8a7) no-repeat center/3px 100%;
 }
 

@@ -7,14 +7,16 @@
     <h1>Notifications</h1>
 </div>
 <div id="notifications-body">
+    {% for notification in notifications %}
     <div class="w-100 h-25 border-bottom border-secondary">
         <div class="d-flex p-3 justify-content-center my-2 align-items-center">
-            <span class="material-icons material-symbols-outlined fs-1">directions_run</span>
+            <span class="material-icons material-symbols-outlined fs-1">{{ notification[1] }}</span>
             <div class="mx-4 d-flex flex-column">
-                <span>Fri Dec 2 2022 | 10:46</span>
-                <p class="fw-bold h6 my-2">Motion detected near crops</p>
+                <span>{{ notification[2] }}</span>
+                <p class="fw-bold h6 my-2">{{ notification[0] }}</p>
             </div>
         </div>
     </div>
+    {% endfor %}
 </div>
 {% endblock %}
