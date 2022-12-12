@@ -54,7 +54,7 @@
         .filter(data => typeof data !== "number")
         .map(data => Date.parse(data)))
 
-    const average = temp.reduce((a, b) => a + b, 1) / temp.length
+    const average = temp.reduce((a, b) => a + b, 0) / temp.length
     document.getElementById("average").innerText = average.toFixed(2).toString() + "°C"
 
     const [min, max] = temp.reduce(([prevMin,prevMax], curr) =>
