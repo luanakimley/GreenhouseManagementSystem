@@ -27,8 +27,20 @@ const setupPubNub = () => {
 				document.getElementById("cur-humidity").innerText = msg["atmos"]["hum"] + "%";
 			}
 
+			if (msg["temp_range"]) {
+				document.getElementById("temp-range").innerText = msg["temp_range"];
+			}
+
 			if (msg["Ph"]) {
 				document.getElementById("cur-ph").innerText = msg["Ph"]
+			}
+
+			if (msg["hum_range"]) {
+				document.getElementById("humidity-range").innerText = msg["hum_range"];
+			}
+
+			if (msg["Ph_range"]) {
+				document.getElementById("ph-range").innerText = msg["Ph_range"];
 			}
 		},
 		presence: (presenceEvent) => {
