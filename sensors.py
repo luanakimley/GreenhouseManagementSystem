@@ -22,9 +22,8 @@ load_dotenv()
 app = Flask(__name__)
 
 # MYSQL Database connection
-#b = MySQLdb.connect(host="107.23.4.28", port=3306, user="teo", passwd="12345678Qwerty@", db="gms")
+# b = MySQLdb.connect(host="107.23.4.28", port=3306, user="teo", passwd="12345678Qwerty@", db="gms")
 db = MySQLdb.connect(host="52.73.218.100", port=3306, user="shaki", passwd="shaki123", db="gms")
-
 
 # PubNub configuration
 pnconfig = PNConfiguration()
@@ -45,10 +44,13 @@ mysql = MySQL(app)
 PIR_pin = 23
 Buzzer_pin = 24
 # GPIO SETUP temperature and humidity pins output
-#tmp_sensor = adafruit_dht.DHT11(board.D27, use_pulseio=False)
+# tmp_sensor = adafruit_dht.DHT11(board.D27, use_pulseio=False)
 tmp_sensor = adafruit_dht.DHT11(board.D27)
 
 myChannel = "greenhouse"
+tempGraphChannel = "temp-graph"
+humGraphChannel = "hum-graph"
+pHGraphChannel = "ph-graph"
 sensorList = ["buzzer", "temp", "ph", "moisture"]
 
 # GPIO SETUP Motion detection and buzzer pins output
@@ -117,17 +119,19 @@ def read_temp_ph():  # Function to read the temperature and humidity and Ph
             ph_min = preset_data[0][7]  # The min value will be taken from DB
             ph_max = preset_data[0][8]  # The max value will be taken from DB
 
-            print("from preset",ph_min,ph_max)
-            #ph_min = 5.5
-            #ph_max = 6.2
+            print("from preset", ph_min, ph_max)
+            # ph_min = 5.5
+            # ph_max = 6.2
             if ph_val < ph_min:
                 GPIO.output(in1_p1, GPIO.HIGH)  # The pump turn on
                 GPIO.output(in2_p1, GPIO.LOW)
                 print("pump1 on - Ph Up")
                 time.sleep(5)
+
                 GPIO.output(in1_p1, GPIO.LOW)  # The pump turn off
                 GPIO.output(in2_p1, GPIO.LOW)
                 print("Pump1 off")
+                publish(myChannel, {"Ph_range": "pH too low, pH UP pump on"})
                 time.sleep(5)
 
             elif ph_val > ph_max:
@@ -139,7 +143,11 @@ def read_temp_ph():  # Function to read the temperature and humidity and Ph
                 GPIO.output(in3_p2, GPIO.LOW)  # The pump turn off
                 GPIO.output(in4_p2, GPIO.LOW)
                 print("Pump2 off")
+                publish(myChannel, {"Ph_range": "pH too high, pH DOWN pump on"})
                 time.sleep(5)
+
+            else:
+                publish(myChannel, {"Ph_range": "pH OK"})
 
         try:
             if GPIO.input(moist_pin):  # If there is a signal in the pin the moisture is true
@@ -151,17 +159,43 @@ def read_temp_ph():  # Function to read the temperature and humidity and Ph
                 # print("The soil is wet!")
                 publish(myChannel, {"Soil is": value})
             # Temperature and humidity data
-            print("wtf")
             temp = tmp_sensor.temperature  # Store the data from the sensor in temp variable
             temp_f = temp * (9 / 5) + 32
             humidity = tmp_sensor.humidity  # Store the data from the sensor in humidity variable
             publish(myChannel, {"atmos": {"temp": temp, "hum": humidity}})  # Publish the data to PubNub
+
+            if ucl:
+                cur = db.cursor()
+                cur.execute("select * from data_range where ucl_id=%s", [ucl])
+                preset_data = cur.fetchall()
+                temp_min = preset_data[0][3]  # The min value will be taken from DB
+                temp_max = preset_data[0][4]  # The max value will be taken from DB
+                hum_min = preset_data[0][5]  # hum_min form DB
+                hum_max = preset_data[0][6]  # hum_max from DB
+
+                print("termpHum trest", temp_min, temp_max, hum_min, hum_max)
+
+                if temp < temp_min:
+                    publish(myChannel, {"temp_range": "Temperature too low"})
+                elif temp > temp_max:
+                    publish(myChannel, {"temp_range": "Temperature too high"})
+                else:
+                    publish(myChannel, {"temp_range": "Temperature OK"})
+
+                if humidity < hum_min:
+                    publish(myChannel, {"hum_range": "Humidity too low"})
+                elif humidity > hum_max:
+                    publish(myChannel, {"hum_range": "Humidity too high"})
+                else:
+                    publish(myChannel, {"hum_range": "Humidity OK"})
+
             print("Temp: {:.1f} C / {:.1f} F    Humidity: {}% ".format(temp, temp_f, humidity))
 
             if ucl:
                 cur = db.cursor()
-                cur.execute('''insert into crop_data(ucl_id, creation_dateTime, temp, humidity, pH, moisture) values (%s, %s, %s, %s, %s, %s)''',
-                        (ucl, time.strftime('%Y-%m-%d %H:%M:%S'), temp, humidity, ph_val, value))
+                cur.execute(
+                    '''insert into crop_data(ucl_id, creation_dateTime, temp, humidity, pH, moisture) values (%s, %s, %s, %s, %s, %s)''',
+                    (ucl, time.strftime('%Y-%m-%d %H:%M:%S'), temp, humidity, ph_val, value))
                 db.commit()
 
         except RuntimeError as error:
@@ -193,13 +227,14 @@ def motion_detection():
             trigger = True
             publish(myChannel, {"motion": "Yes"})
             # TODO: insert to notifications table in database
-            # if ucl:
-            #     cur = db.cursor()
-            #     users_id = cur.execute("select users_id from ucl where ucl_id=%s", [ucl])
-            #     cur.execute(
-            #         '''insert into user_notification(notification_id, users_id, notification_dateTime) values (%s, %s, %s)''',
-            #         (5, users_id, time.strftime('%Y-%m-%d %H:%M:%S'), ))
-            #     db.commit()
+            if ucl:
+                cur = db.cursor()
+                cur.execute("select users_id from ucl where ucl_id=%s", [ucl])
+                users_id = cur.fetchall()[0][0]
+                cur.execute(
+                    '''insert into user_notification(notifications_id, users_id, notification_dateTime) values (%s, %s, %s)''',
+                    (5, users_id, time.strftime('%Y-%m-%d %H:%M:%S'),))
+                db.commit()
 
             time.sleep(1)
             data["motion"] = 1
@@ -291,5 +326,5 @@ if __name__ == '__main__':
     time.sleep(3)
 
     # Run all the thread one after another
-    #sensors_thread_1.join()
-    #sensors_thread_2.join()
+    # sensors_thread_1.join()
+    # sensors_thread_2.join()
