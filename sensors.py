@@ -22,7 +22,8 @@ load_dotenv()
 app = Flask(__name__)
 
 # MYSQL Database connection
-db = MySQLdb.connect(host="107.23.4.28", port=3306, user="teomeo", passwd="12345678Qwerty@", db="gms")
+# b = MySQLdb.connect(host="107.23.4.28", port=3306, user="teo", passwd="12345678Qwerty@", db="gms")
+db = MySQLdb.connect(host="52.73.218.100", port=3306, user="shaki", passwd="shaki123", db="gms")
 
 # PubNub configuration
 pnconfig = PNConfiguration()
@@ -42,8 +43,14 @@ mysql = MySQL(app)
 # Setup motion sensor and buzzer pins output
 PIR_pin = 23
 Buzzer_pin = 24
+# GPIO SETUP temperature and humidity pins output
+# tmp_sensor = adafruit_dht.DHT11(board.D27, use_pulseio=False)
+tmp_sensor = adafruit_dht.DHT11(board.D27)
 
 myChannel = "greenhouse"
+tempGraphChannel = "temp-graph"
+humGraphChannel = "hum-graph"
+pHGraphChannel = "ph-graph"
 sensorList = ["buzzer", "temp", "ph", "moisture"]
 
 # GPIO SETUP Motion detection and buzzer pins output
@@ -51,8 +58,7 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(23, GPIO.IN)
 GPIO.setup(24, GPIO.OUT)
-# GPIO SETUP temperature and humidity pins output
-tmp_sensor = adafruit_dht.DHT11(board.D17)
+
 moist_pin = 21
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(moist_pin, GPIO.IN)
@@ -105,44 +111,43 @@ def read_temp_ph():  # Function to read the temperature and humidity and Ph
         # time.sleep(2)
 
         # fetch the data from UCL table
-        uclid = 1
-        cur = db.cursor()
-        cur.execute("select * from ucl where ucl_id=%s", [uclid])
-        ucl = cur.fetchall()
-        uclid = ucl[0][0]
-        cultureid = ucl[0][1]
-        lifecycleid = ucl[0][2]
-        cultureid2 = 1
-        lifecycleid2 = 1
+        if ucl:
+            cur = db.cursor()
+            cur.execute("select * from data_range where ucl_id=%s", [ucl])
+            preset_data = cur.fetchall()
 
-        cur = db.cursor()
-        cur.execute("select * from preset_data where culture_id =%s and lifecycle_id=%s", [cultureid2, lifecycleid2])
-        preset_data = cur.fetchall()
+            ph_min = preset_data[0][7]  # The min value will be taken from DB
+            ph_max = preset_data[0][8]  # The max value will be taken from DB
 
-        ph_min = preset_data[0][1]  # The min value will be taken from DB
-        ph_max = preset_data[0][2]  # The max value will be taken from DB
+            print("from preset", ph_min, ph_max)
+            # ph_min = 5.5
+            # ph_max = 6.2
+            if ph_val < ph_min:
+                GPIO.output(in1_p1, GPIO.HIGH)  # The pump turn on
+                GPIO.output(in2_p1, GPIO.LOW)
+                print("pump1 on - Ph Up")
+                time.sleep(5)
 
-        # print("from preset",ph_min,ph_max)
-        if ph_val < ph_min:
-            GPIO.output(in1_p1, GPIO.HIGH)  # The pump turn on
-            GPIO.output(in2_p1, GPIO.LOW)
-            print("pump1 on - Ph Up")
-            time.sleep(5)
-            GPIO.output(in1_p1, GPIO.LOW)  # The pump turn off
-            GPIO.output(in2_p1, GPIO.LOW)
-            print("Pump1 off")
-            time.sleep(5)
+                GPIO.output(in1_p1, GPIO.LOW)  # The pump turn off
+                GPIO.output(in2_p1, GPIO.LOW)
+                print("Pump1 off")
+                publish(myChannel, {"Ph_range": "pH too low, pH UP pump on"})
+                time.sleep(5)
 
-        elif ph_val > ph_max:
-            print("Pump2 On - Ph Down")
-            GPIO.output(in3_p2, GPIO.LOW)  # The pump turn on
-            GPIO.output(in4_p2, GPIO.HIGH)
-            time.sleep(5)
+            elif ph_val > ph_max:
+                print("Pump2 On - Ph Down")
+                GPIO.output(in3_p2, GPIO.LOW)  # The pump turn on
+                GPIO.output(in4_p2, GPIO.HIGH)
+                time.sleep(5)
 
-            GPIO.output(in3_p2, GPIO.LOW)  # The pump turn off
-            GPIO.output(in4_p2, GPIO.LOW)
-            print("Pump2 off")
-            time.sleep(5)
+                GPIO.output(in3_p2, GPIO.LOW)  # The pump turn off
+                GPIO.output(in4_p2, GPIO.LOW)
+                print("Pump2 off")
+                publish(myChannel, {"Ph_range": "pH too high, pH DOWN pump on"})
+                time.sleep(5)
+
+            else:
+                publish(myChannel, {"Ph_range": "pH OK"})
 
         try:
             if GPIO.input(moist_pin):  # If there is a signal in the pin the moisture is true
@@ -158,14 +163,40 @@ def read_temp_ph():  # Function to read the temperature and humidity and Ph
             temp_f = temp * (9 / 5) + 32
             humidity = tmp_sensor.humidity  # Store the data from the sensor in humidity variable
             publish(myChannel, {"atmos": {"temp": temp, "hum": humidity}})  # Publish the data to PubNub
+
+            if ucl:
+                cur = db.cursor()
+                cur.execute("select * from data_range where ucl_id=%s", [ucl])
+                preset_data = cur.fetchall()
+                temp_min = preset_data[0][3]  # The min value will be taken from DB
+                temp_max = preset_data[0][4]  # The max value will be taken from DB
+                hum_min = preset_data[0][5]  # hum_min form DB
+                hum_max = preset_data[0][6]  # hum_max from DB
+
+                print("termpHum trest", temp_min, temp_max, hum_min, hum_max)
+
+                if temp < temp_min:
+                    publish(myChannel, {"temp_range": "Temperature too low"})
+                elif temp > temp_max:
+                    publish(myChannel, {"temp_range": "Temperature too high"})
+                else:
+                    publish(myChannel, {"temp_range": "Temperature OK"})
+
+                if humidity < hum_min:
+                    publish(myChannel, {"hum_range": "Humidity too low"})
+                elif humidity > hum_max:
+                    publish(myChannel, {"hum_range": "Humidity too high"})
+                else:
+                    publish(myChannel, {"hum_range": "Humidity OK"})
+
             print("Temp: {:.1f} C / {:.1f} F    Humidity: {}% ".format(temp, temp_f, humidity))
 
-            cur = db.cursor()
-            # cur.execute('''insert into crop_data(temp, humidity, pH, moisture) values (%s, %s, %s, %s)''',
-            #               (temp, humidity, ph_val, value ))
-            cur.execute('''insert into crop_data(ucl_id,temp, humidity, pH, moisture) values (%s, %s, %s, %s, %s)''',
-                        (uclid, humidity, ph_val, value))
-            db.commit()
+            if ucl:
+                cur = db.cursor()
+                cur.execute(
+                    '''insert into crop_data(ucl_id, creation_dateTime, temp, humidity, pH, moisture) values (%s, %s, %s, %s, %s, %s)''',
+                    (ucl, time.strftime('%Y-%m-%d %H:%M:%S'), temp, humidity, ph_val, value))
+                db.commit()
 
         except RuntimeError as error:
             print(error.args[0])
@@ -176,7 +207,6 @@ def read_temp_ph():  # Function to read the temperature and humidity and Ph
             raise error
         # time.sleep(10)
 
-
 def beep(repeat):
     for i in range(0, repeat):
         for pulse in range(60):
@@ -185,7 +215,6 @@ def beep(repeat):
             GPIO.output(Buzzer_pin, False)
             time.sleep(0.001)
         time.sleep(0.02)
-
 
 def motion_detection():
     data["alarm"] = False
@@ -198,6 +227,15 @@ def motion_detection():
             trigger = True
             publish(myChannel, {"motion": "Yes"})
             # TODO: insert to notifications table in database
+            if ucl:
+                cur = db.cursor()
+                cur.execute("select users_id from ucl where ucl_id=%s", [ucl])
+                users_id = cur.fetchall()[0][0]
+                cur.execute(
+                    '''insert into user_notification(notifications_id, users_id, notification_dateTime) values (%s, %s, %s)''',
+                    (5, users_id, time.strftime('%Y-%m-%d %H:%M:%S'),))
+                db.commit()
+
             time.sleep(1)
             data["motion"] = 1
         elif trigger:
@@ -208,11 +246,9 @@ def motion_detection():
             print("Turning on the buzzer from index.html")
         time.sleep(2)
 
-
 # PubNub functions
 def publish(custom_channel, msg):
     pubnub.publish().channel(custom_channel).message(msg).pn_async(my_publish_callback)
-
 
 def my_publish_callback(envelope, status):
     # Check whether request successfully completed or not
@@ -222,7 +258,6 @@ def my_publish_callback(envelope, status):
         pass  # Handle message publish error. Check 'category' property to find out possible issue
         # because of which request did fail.
         # Request can be resent using: [status retry];
-
 
 class MySubscribeCallback(SubscribeCallback):
     def presence(self, pubnub, presence):
@@ -257,8 +292,10 @@ class MySubscribeCallback(SubscribeCallback):
 
             global ucl
             ucl = msg["ucl"]
+            print('ucl line 270' + ucl)
         except Exception as e:
             print("Received: ", message.message)
+            print(ucl)
             print(e)
             pass
 
@@ -273,7 +310,6 @@ class MySubscribeCallback(SubscribeCallback):
             elif eventData[key[0]] is False:
                 data["alarm"] = False
 
-
 if __name__ == '__main__':
     # Start PubNub Listener
     pubnub.add_listener(MySubscribeCallback())
@@ -287,8 +323,8 @@ if __name__ == '__main__':
 
     sensors_thread_2 = threading.Thread(target=read_temp_ph)
     sensors_thread_2.start()
-    # time.sleep(10)
+    time.sleep(3)
 
     # Run all the thread one after another
-    sensors_thread_1.join()
-    sensors_thread_2.join()
+    # sensors_thread_1.join()
+    # sensors_thread_2.join()
