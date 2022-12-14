@@ -8,6 +8,16 @@
     <h1>{{ culture_name }}</h1>
     <p><strong>Lifecycle: </strong>{{ lifecycle_name }}</p>
 </div>
+<div class="text-center my-5">
+    {% for date in dates|reverse %}
+        {% if date[0].strftime('%y-%m-%d') != cur_date %}
+            <a class="btn btn-outline-secondary" href="/ph_graph/{{ date[0].strftime('%y-%m-%d') }}">{{ date[0].strftime('%d/%m') }}</a>
+        {% else %}
+            <a class="btn btn-secondary" href="/ph_graph/{{ date[0].strftime('%y-%m-%d') }}">{{ date[0].strftime('%d/%m') }}</a>
+        {% endif %}
+    &nbsp; &nbsp;
+    {% endfor %}
+</div>
 <div class="range-form-title h3 text-center mt-4">
     Water pH Level Graph
 </div>

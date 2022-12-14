@@ -7,11 +7,14 @@
     <h1>{{ culture_name }}</h1>
     <p><strong>Lifecycle: </strong>{{ lifecycle_name }}</p>
 </div>
-<div class="text-center">
-    {% for date in dates %}
-    <span>
-    {{ date[0].strftime('%d/%m/%Y') }}
-    </span>
+<div class="text-center my-5">
+    {% for date in dates|reverse %}
+        {% if date[0].strftime('%y-%m-%d') != cur_date %}
+            <a class="btn btn-outline-secondary" href="/temp_graph/{{ date[0].strftime('%y-%m-%d') }}">{{ date[0].strftime('%d/%m') }}</a>
+        {% else %}
+            <a class="btn btn-secondary" href="/temp_graph/{{ date[0].strftime('%y-%m-%d') }}">{{ date[0].strftime('%d/%m') }}</a>
+        {% endif %}
+    &nbsp; &nbsp;
     {% endfor %}
 </div>
 <div class="range-form-title h3 text-center mt-4">
@@ -53,6 +56,7 @@
         </div>
     </div>
 </div>
+<br><br>
 <script>
     let temp_graph_data = JSON.parse('{{ temp_graph_data | tojson }}');
     temp = temp_graph_data.flat().filter(data => typeof data === "number")

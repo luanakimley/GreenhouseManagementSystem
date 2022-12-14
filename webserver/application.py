@@ -5,8 +5,6 @@ from flask_mysqldb import MySQL
 import bcrypt
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub import PubNub
-
-
 from dotenv import load_dotenv
 import os
 
@@ -178,7 +176,7 @@ def culture_submit():
     cursor.execute('''insert into data_range(ucl_id, creation_dateTime, tempMin, tempMax, humidityMin, humidityMax, 
     pHMin, phMax) values (%s, curdate(), %s, %s, %s, %s, %s, %s)''',
                    (session["UCL"][0][0], preset_data[0][3], preset_data[0][4], preset_data[0][5],
-                   preset_data[0][6], preset_data[0][7], preset_data[0][8])
+                    preset_data[0][6], preset_data[0][7], preset_data[0][8])
                    )
     mysql.connection.commit()
     return redirect("/")
@@ -188,7 +186,8 @@ def culture_submit():
 @login_required
 def monitoring():
     cursor = mysql.connection.cursor()
-    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)", [session["users_id"]])
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
+                   [session["users_id"]])
     mysql.connection.commit()
     culture_name = cursor.fetchall()[0][0]
 
@@ -203,7 +202,8 @@ def monitoring():
 
     cursor.close()
 
-    return render_template("monitoring.html", culture_name=culture_name, lifecycles=all_lifecycle, preset_data=preset_data, cur_lifecycle=cur_lifecycle)
+    return render_template("monitoring.html", culture_name=culture_name, lifecycles=all_lifecycle,
+                           preset_data=preset_data, cur_lifecycle=cur_lifecycle)
 
 
 @app.route("/edit_temp")
@@ -220,7 +220,8 @@ def edit_temp():
     cursor.execute("select tempMin, tempMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
     tempRange = cursor.fetchall()
 
-    return render_template("edit_temp.html", culture_name=culture_name, lifecycle_name=lifecycle_name, tempRange=tempRange)
+    return render_template("edit_temp.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
+                           tempRange=tempRange)
 
 
 @app.route("/edit_temp_action", methods=["POST"])
@@ -229,7 +230,8 @@ def edit_temp_action():
     temp_max = request.form.get("tempMax")
 
     cursor = mysql.connection.cursor()
-    cursor.execute('''update data_range set tempMin=%s, tempMax=%s where ucl_id=%s''', (temp_min, temp_max, session["UCL"][0][0]))
+    cursor.execute('''update data_range set tempMin=%s, tempMax=%s where ucl_id=%s''',
+                   (temp_min, temp_max, session["UCL"][0][0]))
     mysql.connection.commit()
 
     return redirect("/monitoring")
@@ -238,7 +240,8 @@ def edit_temp_action():
 @app.route("/reset_default_temp")
 def reset_default_temp():
     cursor = mysql.connection.cursor()
-    cursor.execute("select tempMin, tempMax from preset_data where culture_id=%s and lifecycle_id=%s", [session["UCL"][0][2], session["UCL"][0][3]])
+    cursor.execute("select tempMin, tempMax from preset_data where culture_id=%s and lifecycle_id=%s",
+                   [session["UCL"][0][2], session["UCL"][0][3]])
     default_temp = cursor.fetchall()
     cursor.execute('''update data_range set tempMin=%s, tempMax=%s where ucl_id=%s''',
                    (default_temp[0][0], default_temp[0][1], session["UCL"][0][0]))
@@ -271,7 +274,8 @@ def edit_humidity_action():
     humidity_max = request.form.get("humidityMax")
 
     cursor = mysql.connection.cursor()
-    cursor.execute('''update data_range set humidityMin=%s, humidityMax=%s where ucl_id=%s''', (humidity_min, humidity_max, session["UCL"][0][0]))
+    cursor.execute('''update data_range set humidityMin=%s, humidityMax=%s where ucl_id=%s''',
+                   (humidity_min, humidity_max, session["UCL"][0][0]))
     mysql.connection.commit()
 
     return redirect("/monitoring")
@@ -280,7 +284,8 @@ def edit_humidity_action():
 @app.route("/reset_default_humidity")
 def reset_default_humidity():
     cursor = mysql.connection.cursor()
-    cursor.execute("select humidityMin, humidityMax from preset_data where culture_id=%s and lifecycle_id=%s", [session["UCL"][0][2], session["UCL"][0][3]])
+    cursor.execute("select humidityMin, humidityMax from preset_data where culture_id=%s and lifecycle_id=%s",
+                   [session["UCL"][0][2], session["UCL"][0][3]])
     default_humidity = cursor.fetchall()
     cursor.execute('''update data_range set humidityMin=%s, humidityMax=%s where ucl_id=%s''',
                    (default_humidity[0][0], default_humidity[0][1], session["UCL"][0][0]))
@@ -313,7 +318,8 @@ def edit_ph_action():
     ph_max = request.form.get("pHMax")
 
     cursor = mysql.connection.cursor()
-    cursor.execute('''update data_range set pHMin=%s, pHMax=%s where ucl_id=%s''', (ph_min, ph_max, session["UCL"][0][0]))
+    cursor.execute('''update data_range set pHMin=%s, pHMax=%s where ucl_id=%s''',
+                   (ph_min, ph_max, session["UCL"][0][0]))
     mysql.connection.commit()
 
     return redirect("/monitoring")
@@ -322,7 +328,8 @@ def edit_ph_action():
 @app.route("/reset_default_ph")
 def reset_default_ph():
     cursor = mysql.connection.cursor()
-    cursor.execute("select pHMin, pHMax from preset_data where culture_id=%s and lifecycle_id=%s", [session["UCL"][0][2], session["UCL"][0][3]])
+    cursor.execute("select pHMin, pHMax from preset_data where culture_id=%s and lifecycle_id=%s",
+                   [session["UCL"][0][2], session["UCL"][0][3]])
     default_ph = cursor.fetchall()
     cursor.execute('''update data_range set pHMin=%s, pHMax=%s where ucl_id=%s''',
                    (default_ph[0][0], default_ph[0][1], session["UCL"][0][0]))
@@ -334,18 +341,21 @@ def reset_default_ph():
 @app.route("/lifecycle/<int:lifecycle_id>")
 def lifecycle(lifecycle_id):
     cursor = mysql.connection.cursor()
-    cursor.execute("select * from ucl where users_id=%s and culture_id=%s and lifecycle_id=%s", [session["UCL"][0][1], session["UCL"][0][2], lifecycle_id])
+    cursor.execute("select * from ucl where users_id=%s and culture_id=%s and lifecycle_id=%s",
+                   [session["UCL"][0][1], session["UCL"][0][2], lifecycle_id])
     ucl = cursor.fetchall()
 
     if len(ucl) == 0:
         cursor.execute('''insert into ucl(users_id, culture_id, lifecycle_id) values (%s, %s, %s)''',
                        (session["UCL"][0][1], session["UCL"][0][2], lifecycle_id))
         mysql.connection.commit()
-        cursor.execute("select * from ucl where users_id=%s and culture_id=%s and lifecycle_id=%s", [session["UCL"][0][1], session["UCL"][0][2], lifecycle_id])
+        cursor.execute("select * from ucl where users_id=%s and culture_id=%s and lifecycle_id=%s",
+                       [session["UCL"][0][1], session["UCL"][0][2], lifecycle_id])
         session["UCL"] = cursor.fetchall()
         publish(myChannel, {'ucl': session["UCL"][0][0]})
 
-        cursor.execute("select * from preset_data where culture_id=%s and lifecycle_id=%s", [session["UCL"][0][2], session["UCL"][0][3]])
+        cursor.execute("select * from preset_data where culture_id=%s and lifecycle_id=%s",
+                       [session["UCL"][0][2], session["UCL"][0][3]])
         preset_data = cursor.fetchall()
 
         cursor.execute('''insert into data_range(ucl_id, creation_dateTime, tempMin, tempMax, humidityMin, humidityMax,
@@ -365,8 +375,9 @@ def lifecycle(lifecycle_id):
 @app.route("/notifications")
 def notifications():
     cursor = mysql.connection.cursor()
-    cursor.execute("select user_notification_id, description, icon, notification_dateTime from notification n, user_notification un where n.notifications_id = un.notifications_id and users_id=%s order by user_notification_id desc",
-                   [session["users_id"]])
+    cursor.execute(
+        "select user_notification_id, description, icon, notification_dateTime from notification n, user_notification un where n.notifications_id = un.notifications_id and users_id=%s order by user_notification_id desc",
+        [session["users_id"]])
     notifications_list = cursor.fetchall()
 
     return render_template("notifications.html", notifications=notifications_list)
@@ -391,19 +402,47 @@ def temp_graph():
     cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
     lifecycle_name = cursor.fetchall()[0][0]
 
-    cursor.execute("select distinct date(creation_dateTime) from crop_data where ucl_id=%s limit 5",
+    cursor.execute("select distinct date(creation_dateTime) from crop_data where ucl_id=%s group by date(creation_dateTime) order by date(creation_dateTime) desc limit 5",
                    [session["UCL"][0][0]])
     dates = cursor.fetchall()
 
-    cursor.execute("select creation_datetime, temp from crop_data where ucl_id=%s order by crops_id desc limit 50",
-                   [session["UCL"][0][0]])
+    cursor.execute("select t.temp, t.creation_dateTime from crop_data t join (select min(t2.creation_dateTime) as min_timestamp from crop_data t2 group by day(t2.creation_dateTime), hour(t2.creation_dateTime)) t2 on t.creation_dateTime = t2.min_timestamp where date(creation_dateTime)=%s and ucl_id=%s order by creation_dateTime desc",
+                   [dates[0][0], session["UCL"][0][0]])
     temp_graph_data = cursor.fetchall()
 
     cursor.execute("select tempMin, tempMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
     range = cursor.fetchall()
 
     return render_template("temp_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
-                           temp_graph_data=temp_graph_data, range=range, dates=dates)
+                           temp_graph_data=temp_graph_data, range=range, dates=dates, cur_date=dates[0][0].strftime('%y-%m-%d'))
+
+
+@app.route("/temp_graph/<string:creation_date>")
+def temp_graph_day(creation_date):
+    cursor = mysql.connection.cursor()
+
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
+                   [session["users_id"]])
+    culture_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
+    lifecycle_name = cursor.fetchall()[0][0]
+
+    cursor.execute(
+        "select distinct date(creation_dateTime) from crop_data where ucl_id=%s group by date(creation_dateTime) order by date(creation_dateTime) desc limit 5",
+        [session["UCL"][0][0]])
+    dates = cursor.fetchall()
+
+    cursor.execute(
+        "select t.temp, t.creation_dateTime from crop_data t join (select min(t2.creation_dateTime) as min_timestamp from crop_data t2 group by day(t2.creation_dateTime), hour(t2.creation_dateTime)) t2 on t.creation_dateTime = t2.min_timestamp where date(creation_dateTime)=%s and ucl_id=%s order by creation_dateTime desc",
+        [creation_date, session["UCL"][0][0]])
+    temp_graph_data = cursor.fetchall()
+
+    cursor.execute("select tempMin, tempMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
+    range = cursor.fetchall()
+
+    return render_template("temp_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
+                           temp_graph_data=temp_graph_data, range=range, dates=dates, cur_date=creation_date)
 
 
 @app.route("/humidity_graph")
@@ -416,15 +455,49 @@ def humidity_graph():
     cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
     lifecycle_name = cursor.fetchall()[0][0]
 
-    # TODO: determine limit
-    cursor.execute("select creation_datetime, humidity from crop_data where ucl_id=%s order by crops_id desc limit 50",
-                   [session["UCL"][0][0]])
+    cursor.execute(
+        "select distinct date(creation_dateTime) from crop_data where ucl_id=%s group by date(creation_dateTime) order by date(creation_dateTime) desc limit 5",
+        [session["UCL"][0][0]])
+    dates = cursor.fetchall()
+
+    cursor.execute(
+        "select t.humidity, t.creation_dateTime from crop_data t join (select min(t2.creation_dateTime) as min_timestamp from crop_data t2 group by day(t2.creation_dateTime), hour(t2.creation_dateTime)) t2 on t.creation_dateTime = t2.min_timestamp where date(creation_dateTime)=%s and ucl_id=%s order by creation_dateTime desc",
+        [dates[0][0], session["UCL"][0][0]])
     humidity_graph_data = cursor.fetchall()
 
     cursor.execute("select humidityMin, humidityMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
     range = cursor.fetchall()
 
-    return render_template("humidity_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name, humidity_graph_data=humidity_graph_data, range=range)
+    return render_template("humidity_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name, dates=dates,
+                           humidity_graph_data=humidity_graph_data, range=range, cur_date=dates[0][0].strftime('%y-%m-%d'))
+
+
+@app.route("/humidity_graph/<string:creation_date>")
+def humidity_graph_day(creation_date):
+    cursor = mysql.connection.cursor()
+
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
+                   [session["users_id"]])
+    culture_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
+    lifecycle_name = cursor.fetchall()[0][0]
+
+    cursor.execute(
+        "select distinct date(creation_dateTime) from crop_data where ucl_id=%s group by date(creation_dateTime) order by date(creation_dateTime) desc limit 5",
+        [session["UCL"][0][0]])
+    dates = cursor.fetchall()
+
+    cursor.execute(
+        "select t.humidity, t.creation_dateTime from crop_data t join (select min(t2.creation_dateTime) as min_timestamp from crop_data t2 group by day(t2.creation_dateTime), hour(t2.creation_dateTime)) t2 on t.creation_dateTime = t2.min_timestamp where date(creation_dateTime)=%s and ucl_id=%s order by creation_dateTime desc",
+        [creation_date, session["UCL"][0][0]])
+    humidity_graph_data = cursor.fetchall()
+
+    cursor.execute("select humidityMin, humidityMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
+    range = cursor.fetchall()
+
+    return render_template("humidity_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
+                           humidity_graph_data=humidity_graph_data, range=range, dates=dates, cur_date=creation_date)
 
 
 @app.route("/ph_graph")
@@ -437,15 +510,49 @@ def ph_graph():
     cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
     lifecycle_name = cursor.fetchall()[0][0]
 
-    # TODO: determine limit
-    cursor.execute("select creation_datetime, pH from crop_data where ucl_id=%s order by crops_id desc limit 50",
-                   [session["UCL"][0][0]])
+    cursor.execute(
+        "select distinct date(creation_dateTime) from crop_data where ucl_id=%s group by date(creation_dateTime) order by date(creation_dateTime) desc limit 5",
+        [session["UCL"][0][0]])
+    dates = cursor.fetchall()
+
+    cursor.execute(
+        "select t.pH, t.creation_dateTime from crop_data t join (select min(t2.creation_dateTime) as min_timestamp from crop_data t2 group by day(t2.creation_dateTime), hour(t2.creation_dateTime)) t2 on t.creation_dateTime = t2.min_timestamp where date(creation_dateTime)=%s and ucl_id=%s order by creation_dateTime desc",
+        [dates[0][0], session["UCL"][0][0]])
     ph_graph_data = cursor.fetchall()
 
     cursor.execute("select pHMin, pHMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
     range = cursor.fetchall()
 
-    return render_template("ph_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name, ph_graph_data=ph_graph_data, range=range)
+    return render_template("ph_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
+                           ph_graph_data=ph_graph_data, range=range, dates=dates, cur_date=dates[0][0].strftime('%y-%m-%d'))
+
+
+@app.route("/ph_graph/<string:creation_date>")
+def ph_graph_day(creation_date):
+    cursor = mysql.connection.cursor()
+
+    cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
+                   [session["users_id"]])
+    culture_name = cursor.fetchall()[0][0]
+
+    cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
+    lifecycle_name = cursor.fetchall()[0][0]
+
+    cursor.execute(
+        "select distinct date(creation_dateTime) from crop_data where ucl_id=%s group by date(creation_dateTime) order by date(creation_dateTime) desc limit 5",
+        [session["UCL"][0][0]])
+    dates = cursor.fetchall()
+
+    cursor.execute(
+        "select t.pH, t.creation_dateTime from crop_data t join (select min(t2.creation_dateTime) as min_timestamp from crop_data t2 group by day(t2.creation_dateTime), hour(t2.creation_dateTime)) t2 on t.creation_dateTime = t2.min_timestamp where date(creation_dateTime)=%s and ucl_id=%s order by creation_dateTime desc",
+        [creation_date, session["UCL"][0][0]])
+    ph_graph_data = cursor.fetchall()
+
+    cursor.execute("select pHMin, pHMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
+    range = cursor.fetchall()
+
+    return render_template("ph_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
+                           ph_graph_data=ph_graph_data, range=range, dates=dates, cur_date=creation_date)
 
 
 def publish(custom_channel, msg):
