@@ -61,6 +61,7 @@ def index():
         return redirect("/landing")
 
     else:
+        publish(myChannel, {'ucl': session["UCL"][0][0]})
         return redirect("/monitoring")
 
 
@@ -342,7 +343,7 @@ def lifecycle(lifecycle_id):
         mysql.connection.commit()
         cursor.execute("select * from ucl where users_id=%s and culture_id=%s and lifecycle_id=%s", [session["UCL"][0][1], session["UCL"][0][2], lifecycle_id])
         session["UCL"] = cursor.fetchall()
-        publish(myChannel, cursor.fetchall())
+        publish(myChannel, {'ucl': session["UCL"][0][0]})
 
         cursor.execute("select * from preset_data where culture_id=%s and lifecycle_id=%s", [session["UCL"][0][2], session["UCL"][0][3]])
         preset_data = cursor.fetchall()
@@ -364,11 +365,20 @@ def lifecycle(lifecycle_id):
 @app.route("/notifications")
 def notifications():
     cursor = mysql.connection.cursor()
-    cursor.execute("select description, icon, notification_dateTime from notification n, user_notification un where n.notifications_id = un.notifications_id and users_id=%s",
+    cursor.execute("select user_notification_id, description, icon, notification_dateTime from notification n, user_notification un where n.notifications_id = un.notifications_id and users_id=%s order by user_notification_id desc",
                    [session["users_id"]])
     notifications_list = cursor.fetchall()
 
     return render_template("notifications.html", notifications=notifications_list)
+
+
+@app.route("/delete_notification/<int:user_notification_id>")
+def delete_notification(user_notification_id):
+    cursor = mysql.connection.cursor()
+    cursor.execute("delete from user_notification where user_notification_id=%s", [user_notification_id])
+    mysql.connection.commit()
+
+    return redirect("/notifications")
 
 
 @app.route("/temp_graph")

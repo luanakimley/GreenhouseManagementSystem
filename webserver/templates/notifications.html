@@ -10,11 +10,14 @@
     {% for notification in notifications %}
     <div class="w-100 h-25 border-bottom border-secondary">
         <div class="d-flex p-3 justify-content-center my-2 align-items-center">
-            <span class="material-icons material-symbols-outlined fs-1">{{ notification[1] }}</span>
+            <span class="material-icons material-symbols-outlined fs-1">{{ notification[2] }}</span>
             <div class="mx-4 d-flex flex-column">
-                <span>{{ notification[2] }}</span>
-                <p class="fw-bold h6 my-2">{{ notification[0] }}</p>
+                <span>{{ notification[3] }}</span>
+                <p class="fw-bold h6 my-2">{{ notification[1] }}</p>
             </div>
+            <a href="/delete_notification/{{ notification[0] }}">
+                <span class="material-icons material-symbols-outlined text-danger">close</span>
+            </a>
         </div>
     </div>
     {% endfor %}
