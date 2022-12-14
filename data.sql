@@ -147,10 +147,13 @@ INSERT INTO crop_data VALUES (7, 1, "2022-11-13 15:00:00", 20, 66, 7.0, "Wet");
 INSERT INTO data_range VALUES (1, 1, "2022-11-12 15:00:00", 15, 20, 70, 80, 6.0, 7.0);
 
 INSERT INTO notification VALUES (1, "Your crop needs watering", "water");
-INSERT INTO notification VALUES (2, "Your crop is too warm", "device_thermostat");
-INSERT INTO notification VALUES (3, "Your crop needs more pH solution", "water_ph");
-INSERT INTO notification VALUES (4, "Your crop is too cold", "device_thermostat");
+INSERT INTO notification VALUES (2, "Air temperature is too warm", "device_thermostat");
+INSERT INTO notification VALUES (3, "Water needs more pH solution", "water_ph");
+INSERT INTO notification VALUES (4, "Air temperature is too cold", "device_thermostat");
 INSERT INTO notification VALUES (5, "Motion detected near crops", "directions_run");
+INSERT INTO notification VALUES (6, "Water needs less pH solution", "water_ph");
+INSERT INTO notification VALUES (7, "Air is too humid", "humidity_percentage");
+INSERT INTO notification VALUES (8, "Air needs more humidity", "humidity_percentage");
 
 INSERT INTO user_notification VALUES (1, 1, 1, "2022-10-08 10:45:00");
 INSERT INTO user_notification VALUES (2, 2, 1, "2022-11-09 12:45:56");
