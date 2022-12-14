@@ -7,9 +7,11 @@
             <span class="material-icons material-symbols-outlined">
                 notifications
             </span>
-            <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                <span class="visually-hidden">New alerts</span>
-            </span>
+            {% if notifications_count > 0 %}
+                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                    <span class="visually-hidden">New alerts</span>
+                </span>
+            {% endif %}
         </a>
     </div>
     <h1>{{ culture_name }}</h1>

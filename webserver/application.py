@@ -200,10 +200,13 @@ def monitoring():
     cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
     cur_lifecycle = cursor.fetchall()
 
+    cursor.execute("select count(users_id) from user_notification where users_id=%s", [session["users_id"]])
+    notifications_count = cursor.fetchall()[0][0]
+
     cursor.close()
 
     return render_template("monitoring.html", culture_name=culture_name, lifecycles=all_lifecycle,
-                           preset_data=preset_data, cur_lifecycle=cur_lifecycle)
+                           preset_data=preset_data, cur_lifecycle=cur_lifecycle, notifications_count=notifications_count)
 
 
 @app.route("/edit_temp")
