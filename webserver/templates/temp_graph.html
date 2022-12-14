@@ -7,6 +7,13 @@
     <h1>{{ culture_name }}</h1>
     <p><strong>Lifecycle: </strong>{{ lifecycle_name }}</p>
 </div>
+<div class="text-center">
+    {% for date in dates %}
+    <span>
+    {{ date[0].strftime('%d/%m/%Y') }}
+    </span>
+    {% endfor %}
+</div>
 <div class="range-form-title h3 text-center mt-4">
     Air Temperature Graph
 </div>

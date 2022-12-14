@@ -391,7 +391,10 @@ def temp_graph():
     cursor.execute("select name from lifecycle where lifecycle_id=%s", [session["UCL"][0][3]])
     lifecycle_name = cursor.fetchall()[0][0]
 
-    # TODO: determine limit
+    cursor.execute("select distinct date(creation_dateTime) from crop_data where ucl_id=%s limit 5",
+                   [session["UCL"][0][0]])
+    dates = cursor.fetchall()
+
     cursor.execute("select creation_datetime, temp from crop_data where ucl_id=%s order by crops_id desc limit 50",
                    [session["UCL"][0][0]])
     temp_graph_data = cursor.fetchall()
@@ -399,7 +402,8 @@ def temp_graph():
     cursor.execute("select tempMin, tempMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
     range = cursor.fetchall()
 
-    return render_template("temp_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name, temp_graph_data=temp_graph_data, range=range)
+    return render_template("temp_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
+                           temp_graph_data=temp_graph_data, range=range, dates=dates)
 
 
 @app.route("/humidity_graph")
