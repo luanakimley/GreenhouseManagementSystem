@@ -15,6 +15,7 @@ app = Flask(__name__)
 # PubNub configuration
 pnconfig = PNConfiguration()
 # pnconfig.cipher_key = 'myCipherKey'
+# pnconfig.auth_key = 'myAuthKey'
 pnconfig.subscribe_key = os.getenv('PUBNUB_SUBSCRIBE_KEY')
 pnconfig.publish_key = os.getenv('PUBNUB_PUBLISH_KEY')
 pnconfig.user_id = os.getenv('PUBNUB_USERID')
@@ -409,6 +410,10 @@ def temp_graph():
                    [session["UCL"][0][0]])
     dates = cursor.fetchall()
 
+    if len(dates) == 0:
+        flash("No data available")
+        return redirect("/monitoring")
+
     cursor.execute("select t.temp, t.creation_dateTime from crop_data t join (select min(t2.creation_dateTime) as min_timestamp from crop_data t2 group by day(t2.creation_dateTime), hour(t2.creation_dateTime)) t2 on t.creation_dateTime = t2.min_timestamp where date(creation_dateTime)=%s and ucl_id=%s order by creation_dateTime desc",
                    [dates[0][0], session["UCL"][0][0]])
     temp_graph_data = cursor.fetchall()
@@ -462,6 +467,10 @@ def humidity_graph():
         "select distinct date(creation_dateTime) from crop_data where ucl_id=%s group by date(creation_dateTime) order by date(creation_dateTime) desc limit 5",
         [session["UCL"][0][0]])
     dates = cursor.fetchall()
+
+    if len(dates) == 0:
+        flash("No data available")
+        return redirect("/monitoring")
 
     cursor.execute(
         "select t.humidity, t.creation_dateTime from crop_data t join (select min(t2.creation_dateTime) as min_timestamp from crop_data t2 group by day(t2.creation_dateTime), hour(t2.creation_dateTime)) t2 on t.creation_dateTime = t2.min_timestamp where date(creation_dateTime)=%s and ucl_id=%s order by creation_dateTime desc",
@@ -517,6 +526,10 @@ def ph_graph():
         "select distinct date(creation_dateTime) from crop_data where ucl_id=%s group by date(creation_dateTime) order by date(creation_dateTime) desc limit 5",
         [session["UCL"][0][0]])
     dates = cursor.fetchall()
+
+    if len(dates) == 0:
+        flash("No data available")
+        return redirect("/monitoring")
 
     cursor.execute(
         "select t.pH, t.creation_dateTime from crop_data t join (select min(t2.creation_dateTime) as min_timestamp from crop_data t2 group by day(t2.creation_dateTime), hour(t2.creation_dateTime)) t2 on t.creation_dateTime = t2.min_timestamp where date(creation_dateTime)=%s and ucl_id=%s order by creation_dateTime desc",
