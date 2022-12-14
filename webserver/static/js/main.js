@@ -29,6 +29,10 @@ const setupPubNub = () => {
 
 			if (msg["temp_range"]) {
 				document.getElementById("temp-range").innerText = msg["temp_range"];
+
+				if (!msg["temp_range"].includes("OK")) {
+					document.getElementById("temp-box").style.border = "3px solid #fe9693"
+				}
 			}
 
 			if (msg["Ph"]) {
@@ -37,10 +41,18 @@ const setupPubNub = () => {
 
 			if (msg["hum_range"]) {
 				document.getElementById("humidity-range").innerText = msg["hum_range"];
+
+				if (!msg["hum_range"].includes("OK")) {
+					document.getElementById("humidity-box").style.border = "3px solid #fe9693"
+				}
 			}
 
 			if (msg["Ph_range"]) {
 				document.getElementById("ph-range").innerText = msg["Ph_range"];
+
+				if (!msg["hum_range"].includes("OK")) {
+					document.getElementById("ph-box").style.border = "3px solid #fe9693"
+				}
 			}
 		},
 		presence: (presenceEvent) => {
