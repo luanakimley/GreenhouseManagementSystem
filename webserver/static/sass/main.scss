@@ -95,6 +95,14 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
+.profile-icon {
+    right: 85px;
+
+    .material-icons {
+        color: $green;
+    }
+}
+
 .logo {
     width: 155px;
 }

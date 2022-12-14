@@ -29,6 +29,16 @@
             {% endif %}
         </a>
     </div>
+    <div class="dropdown position-absolute profile-icon">
+        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="material-icons material-symbols-outlined">
+                person
+            </span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <li><a class="dropdown-item" href="/logout">Log out</a></li>
+        </ul>
+    </div>
     <h1>{{ culture_name }}</h1>
     <span>
         <div class="dropdown">

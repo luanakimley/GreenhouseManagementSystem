@@ -76,6 +76,13 @@ h1, h2, h3, h4, h5, h6 {
   transition: 0.5s;
 }
 
+.profile-icon {
+  right: 85px;
+}
+.profile-icon .material-icons {
+  color: #31453D;
+}
+
 .logo {
   width: 155px;
 }
