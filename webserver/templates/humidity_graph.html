@@ -57,6 +57,7 @@
         </div>
     </div>
 </div>
+<br><br>
 <script>
     let humidity_graph_data = JSON.parse('{{ humidity_graph_data | tojson }}');
     humidity = humidity_graph_data.flat().filter(data => typeof data === "number")
