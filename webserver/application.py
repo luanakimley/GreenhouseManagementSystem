@@ -22,10 +22,10 @@ pnconfig.user_id = os.getenv('PUBNUB_USERID')
 pnconfig.ssl = True  # Encrypt the data when sent to PubNub
 pubnub = PubNub(pnconfig)
 
-app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST')
 app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')
 app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')
-app.config['MYSQL_DB'] = 'gms'
+app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
 
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
