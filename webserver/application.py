@@ -5,8 +5,15 @@ from flask_mysqldb import MySQL
 import bcrypt
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub import PubNub
+import json
+from google.oauth2 import id_token
+from pip._vendor import cachecontrol
+import google.auth.transport.requests
+from google_auth_oauthlib.flow import Flow
 from dotenv import load_dotenv
 import os
+import pathlib
+import requests
 
 load_dotenv()
 
@@ -30,6 +37,15 @@ app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
+GOOGLE_CLIENT_ID = "896287247574-lt02c3oqmrv42hii5eeiafdi7l90u4hu.apps.googleusercontent.com"
+client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
+
+flow = Flow.from_client_secrets_file(
+    client_secrets_file=client_secrets_file,
+    scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],
+    redirect_uri="https://greenhousemanagementsystem.tk/callback"
+)
+
 Session(app)
 
 mysql = MySQL(app)
@@ -44,6 +60,55 @@ def login_required(function):
         else:
             return function()
     return wrapper
+
+
+@app.route("/callback")
+def callback():
+    flow.fetch_token(authorization_response=request.url)
+
+    if not session["state"] == request.args["state"]:
+        abort(500) #States do not match, Don't trust
+
+    credentials = flow.credentials
+    request_session = requests.session()
+    cached_session = cachecontrol.CacheControl(request_session)
+    token_request = google.auth.transport.requests.Request(session=cached_session)
+
+    id_info = id_token.verify_oauth2_token(
+        id_token = credentials._id_token,
+        request=token_request,
+        audience = GOOGLE_CLIENT_ID
+    )
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("select * from user where email=%s", [id_info.get("sub")])
+    user_data = cursor.fetchall()
+
+    if len(user_data) == 0:
+        cursor.execute('''insert into user(username, email) values (%s, %s)''',
+                       (id_info.get("name"), id_info.get("sub")))
+        mysql.connection.commit()
+
+        cursor.execute("select users_id from user where email=%s", [id_info.get("sub")])
+        users_id = cursor.fetchall()[0][0]
+
+        session["email"] = id_info.get("sub")
+        session["username"] = id_info.get("name")
+        session["users_id"] = users_id
+        session["google_token"] = credentials._id_token
+
+        return redirect("/landing")
+
+    session["users_id"] = user_data[0][0]
+    session["username"] = user_data[0][1]
+    session["email"] = user_data[0][2]
+
+    cursor.execute("select * from ucl where users_id=%s", [user_data[0][0]])
+    user_culture_lifecycle = cursor.fetchall()
+
+    session["UCL"] = user_culture_lifecycle
+
+    return redirect("/")
 
 
 @app.route("/")
@@ -62,6 +127,13 @@ def index():
     else:
         publish(myChannel, {'ucl': session["UCL"][0][0]})
         return redirect("/monitoring")
+
+
+@app.route("/google_login", methods=["GET", "POST"])
+def google_login():
+    authorization_url, state = flow.authorization_url()
+    session["state"] = state
+    return redirect(authorization_url)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -137,10 +209,7 @@ def register():
 
 @app.route("/logout")
 def logout():
-    session["username"] = None
-    session["email"] = None
-    session["users_id"] = None
-    session["UCL"] = None
+    session.clear()
     return redirect("/")
 
 
