@@ -54,6 +54,15 @@ const setupPubNub = () => {
 					document.getElementById("ph-box").style.border = "3px solid #fe9693"
 				}
 			}
+
+			if (msg["motion"] === "Yes") {
+				Swal.fire({
+					title:"Motion detected!",
+					text: "Motion is detected near your crops.",
+					confirmButtonColor: "#31453D",
+					icon: "error"
+				})
+			}
 		},
 		presence: (presenceEvent) => {
 			// Handle presence
