@@ -107,6 +107,7 @@ def callback():
     user_culture_lifecycle = cursor.fetchall()
 
     session["UCL"] = user_culture_lifecycle
+    publish(myChannel, {'ucl': session["UCL"][0][0]})
 
     return redirect("/")
 
