@@ -100,14 +100,16 @@ h1, h2, h3, h4, h5, h6 {
 
     .material-icons {
         color: $green;
+
+        &:hover {
+            color: $light-green;
+            transition: 0.5s;
+        }
     }
 }
 
 .logo {
     width: 155px;
-}
-
-.menu {
 }
 
 .header {

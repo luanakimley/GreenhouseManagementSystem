@@ -82,6 +82,10 @@ h1, h2, h3, h4, h5, h6 {
 .profile-icon .material-icons {
   color: #31453D;
 }
+.profile-icon .material-icons:hover {
+  color: #8db8a7;
+  transition: 0.5s;
+}
 
 .logo {
   width: 155px;
