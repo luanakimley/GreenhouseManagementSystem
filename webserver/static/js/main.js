@@ -50,7 +50,7 @@ const setupPubNub = () => {
 			if (msg["Ph_range"]) {
 				document.getElementById("ph-range").innerText = msg["Ph_range"];
 
-				if (!msg["hum_range"].includes("OK")) {
+				if (!msg["Ph_range"].includes("OK")) {
 					document.getElementById("ph-box").style.border = "3px solid #fe9693"
 				}
 			}
