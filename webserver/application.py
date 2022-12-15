@@ -184,7 +184,7 @@ def culture_submit():
 
 
 @app.route("/monitoring")
-@login_required
+# @login_required
 def monitoring():
     cursor = mysql.connection.cursor()
     cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
@@ -362,6 +362,7 @@ def lifecycle(lifecycle_id):
                        [session["UCL"][0][2], session["UCL"][0][3]])
         preset_data = cursor.fetchall()
 
+        print(preset_data)
         cursor.execute('''insert into data_range(ucl_id, creation_dateTime, tempMin, tempMax, humidityMin, humidityMax,
             pHMin, phMax) values (%s, curdate(), %s, %s, %s, %s, %s, %s)''',
                        (session["UCL"][0][0], preset_data[0][3], preset_data[0][4], preset_data[0][5],
@@ -418,10 +419,13 @@ def temp_graph():
                    [dates[0][0], session["UCL"][0][0]])
     temp_graph_data = cursor.fetchall()
 
+    cursor.execute("select temp from crop_data where date(creation_dateTime)=%s and ucl_id=%s", [dates[0][0], session["UCL"][0][0]])
+    temp_statistics_data = cursor.fetchall()
+
     cursor.execute("select tempMin, tempMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
     range = cursor.fetchall()
 
-    return render_template("temp_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
+    return render_template("temp_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name, temp_statistics_data=temp_statistics_data,
                            temp_graph_data=temp_graph_data, range=range, dates=dates, cur_date=dates[0][0].strftime('%y-%m-%d'))
 
 
@@ -446,10 +450,14 @@ def temp_graph_day(creation_date):
         [creation_date, session["UCL"][0][0]])
     temp_graph_data = cursor.fetchall()
 
+    cursor.execute("select temp from crop_data where date(creation_dateTime)=%s and ucl_id=%s",
+                   [creation_date, session["UCL"][0][0]])
+    temp_statistics_data = cursor.fetchall()
+
     cursor.execute("select tempMin, tempMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
     range = cursor.fetchall()
 
-    return render_template("temp_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
+    return render_template("temp_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name, temp_statistics_data=temp_statistics_data,
                            temp_graph_data=temp_graph_data, range=range, dates=dates, cur_date=creation_date)
 
 
@@ -477,10 +485,14 @@ def humidity_graph():
         [dates[0][0], session["UCL"][0][0]])
     humidity_graph_data = cursor.fetchall()
 
+    cursor.execute("select humidity from crop_data where date(creation_dateTime)=%s and ucl_id=%s", [dates[0][0], session["UCL"][0][0]])
+    humidity_statistics_data = cursor.fetchall()
+
     cursor.execute("select humidityMin, humidityMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
     range = cursor.fetchall()
 
     return render_template("humidity_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name, dates=dates,
+                           humidity_statistics_data=humidity_statistics_data,
                            humidity_graph_data=humidity_graph_data, range=range, cur_date=dates[0][0].strftime('%y-%m-%d'))
 
 
@@ -505,10 +517,14 @@ def humidity_graph_day(creation_date):
         [creation_date, session["UCL"][0][0]])
     humidity_graph_data = cursor.fetchall()
 
+    cursor.execute("select humidity from crop_data where date(creation_dateTime)=%s and ucl_id=%s", [creation_date, session["UCL"][0][0]])
+    humidity_statistics_data = cursor.fetchall()
+
     cursor.execute("select humidityMin, humidityMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
     range = cursor.fetchall()
 
     return render_template("humidity_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
+                           humidity_statistics_data=humidity_statistics_data,
                            humidity_graph_data=humidity_graph_data, range=range, dates=dates, cur_date=creation_date)
 
 
@@ -536,10 +552,13 @@ def ph_graph():
         [dates[0][0], session["UCL"][0][0]])
     ph_graph_data = cursor.fetchall()
 
+    cursor.execute("select pH from crop_data where date(creation_dateTime)=%s and ucl_id=%s", [dates[0][0], session["UCL"][0][0]])
+    ph_statistics_data = cursor.fetchall()
+
     cursor.execute("select pHMin, pHMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
     range = cursor.fetchall()
 
-    return render_template("ph_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
+    return render_template("ph_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name, ph_statistics_data=ph_statistics_data,
                            ph_graph_data=ph_graph_data, range=range, dates=dates, cur_date=dates[0][0].strftime('%y-%m-%d'))
 
 
@@ -564,10 +583,13 @@ def ph_graph_day(creation_date):
         [creation_date, session["UCL"][0][0]])
     ph_graph_data = cursor.fetchall()
 
+    cursor.execute("select pH from crop_data where date(creation_dateTime)=%s and ucl_id=%s", [creation_date, session["UCL"][0][0]])
+    ph_statistics_data = cursor.fetchall()
+
     cursor.execute("select pHMin, pHMax from data_range where ucl_id=%s", [session["UCL"][0][0]])
     range = cursor.fetchall()
 
-    return render_template("ph_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name,
+    return render_template("ph_graph.html", culture_name=culture_name, lifecycle_name=lifecycle_name, ph_statistics_data=ph_statistics_data,
                            ph_graph_data=ph_graph_data, range=range, dates=dates, cur_date=creation_date)
 
 

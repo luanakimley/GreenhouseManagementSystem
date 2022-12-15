@@ -59,7 +59,8 @@
 <br><br>
 <script>
     let temp_graph_data = JSON.parse('{{ temp_graph_data | tojson }}');
-    temp = temp_graph_data.flat().filter(data => typeof data === "number")
+    let temp_statistics_data = JSON.parse('{{ temp_statistics_data | tojson }}')
+    temp = temp_statistics_data.flat().filter(data => typeof data === "number")
     temp_data = ["Temperature"].concat(temp)
     date_recorded = ["x"].concat(temp_graph_data.flat()
         .filter(data => typeof data !== "number")

@@ -60,7 +60,8 @@
 <br><br>
 <script>
     let humidity_graph_data = JSON.parse('{{ humidity_graph_data | tojson }}');
-    humidity = humidity_graph_data.flat().filter(data => typeof data === "number")
+    let humidity_statistics_data = JSON.parse('{{ humidity_statistics_data | tojson }}')
+    humidity = humidity_statistics_data.flat().filter(data => typeof data === "number")
     humidity_data = ["Humidity"].concat(humidity)
     date_recorded = ["x"].concat(humidity_graph_data.flat()
         .filter(data => typeof data !== "number")

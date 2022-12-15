@@ -61,7 +61,8 @@
 <br><br>
 <script>
     let ph_graph_data = JSON.parse('{{ ph_graph_data | tojson }}');
-    ph = ph_graph_data.flat().filter(data => typeof data === "number")
+    let ph_statistics_data = JSON.parse('{{ ph_statistics_data | tojson }}');
+    ph = ph_statistics_data.flat().filter(data => typeof data === "number")
     ph_data = ["pH"].concat(ph)
     date_recorded = ["x"].concat(ph_graph_data.flat()
         .filter(data => typeof data !== "number")
