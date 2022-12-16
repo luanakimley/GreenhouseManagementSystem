@@ -21,13 +21,13 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# MYSQL Database connection
-# b = MySQLdb.connect(host="107.23.4.28", port=3306, user="teo", passwd="12345678Qwerty@", db="gms")
-db = MySQLdb.connect(host="52.73.218.100", port=3306, user="shaki", passwd="shaki123", db="gms")
+# MYSQL Database connection to AWS instance
+db = MySQLdb.connect(host="18.213.2.33", port=3306, user="shaki", passwd="shaki123", db="gms")
 
 # PubNub configuration
 pnconfig = PNConfiguration()
-# pnconfig.cipher_key = 'myCipherKey'
+pnconfig.cipher_key = 'pubnubrealtimecommunicationplatf'
+pnconfig.auth_key = 'myAuthKey'
 pnconfig.subscribe_key = 'sub-c-5832596e-d4b6-4552-b2c0-a28a18fadd40'
 pnconfig.publish_key = 'pub-c-dab1a887-ba42-48aa-b99d-e42ecf3dedb3'
 pnconfig.user_id = "e6f98bfc-65f6-11ed-9022-0242ac120002"
@@ -44,7 +44,6 @@ mysql = MySQL(app)
 PIR_pin = 23
 Buzzer_pin = 24
 # GPIO SETUP temperature and humidity pins output
-# tmp_sensor = adafruit_dht.DHT11(board.D27, use_pulseio=False)
 tmp_sensor = adafruit_dht.DHT11(board.D27)
 
 myChannel = "greenhouse"
@@ -126,25 +125,23 @@ def read_temp_ph():  # Function to read the temperature and humidity and Ph
                 GPIO.output(in1_p1, GPIO.HIGH)  # The pump turn on
                 GPIO.output(in2_p1, GPIO.LOW)
                 print("pump1 on - Ph Up")
-                time.sleep(5)
+                time.sleep(0.3)
 
                 GPIO.output(in1_p1, GPIO.LOW)  # The pump turn off
                 GPIO.output(in2_p1, GPIO.LOW)
                 print("Pump1 off")
                 publish(myChannel, {"Ph_range": "pH too low, pH UP pump on"})
-                time.sleep(5)
 
             elif ph_val > ph_max:
                 print("Pump2 On - Ph Down")
                 GPIO.output(in3_p2, GPIO.LOW)  # The pump turn on
                 GPIO.output(in4_p2, GPIO.HIGH)
-                time.sleep(5)
+                time.sleep(0.3)
 
                 GPIO.output(in3_p2, GPIO.LOW)  # The pump turn off
                 GPIO.output(in4_p2, GPIO.LOW)
                 print("Pump2 off")
                 publish(myChannel, {"Ph_range": "pH too high, pH DOWN pump on"})
-                time.sleep(5)
 
             else:
                 publish(myChannel, {"Ph_range": "pH OK"})
@@ -325,6 +322,3 @@ if __name__ == '__main__':
     sensors_thread_2.start()
     time.sleep(3)
 
-    # Run all the thread one after another
-    # sensors_thread_1.join()
-    # sensors_thread_2.join()
