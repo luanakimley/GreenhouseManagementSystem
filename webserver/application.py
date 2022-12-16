@@ -5,7 +5,6 @@ from flask_mysqldb import MySQL
 import bcrypt
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub import PubNub
-import json
 from google.oauth2 import id_token
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
@@ -21,11 +20,11 @@ app = Flask(__name__)
 
 # PubNub configuration
 pnconfig = PNConfiguration()
-# pnconfig.cipher_key = 'myCipherKey'
-# pnconfig.auth_key = 'myAuthKey'
 pnconfig.subscribe_key = os.getenv('PUBNUB_SUBSCRIBE_KEY')
 pnconfig.publish_key = os.getenv('PUBNUB_PUBLISH_KEY')
 pnconfig.user_id = os.getenv('PUBNUB_USERID')
+pnconfig.auth_key = os.getenv('PUBNUB_AUTHKEY')
+pnconfig.cipher_key = os.getenv('PUBNUB_CIPHERKEY')
 pnconfig.ssl = True  # Encrypt the data when sent to PubNub
 pubnub = PubNub(pnconfig)
 

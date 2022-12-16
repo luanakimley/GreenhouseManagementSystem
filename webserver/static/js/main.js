@@ -6,7 +6,13 @@ const setupPubNub = () => {
 		subscribeKey: 'sub-c-5832596e-d4b6-4552-b2c0-a28a18fadd40',
 		publishKey: 'pub-c-dab1a887-ba42-48aa-b99d-e42ecf3dedb3',
 		userId: "e6f98bfc-65f6-11ed-9022-0242ac120002",
-		//cipherKey: "myCipherKey"
+	});
+
+	sendKey("../static/secret.json")
+
+		// subscribe to a channel
+	pubnub.subscribe({
+		channels: [myChannel]
 	});
 
 	const listener = {
@@ -69,11 +75,20 @@ const setupPubNub = () => {
 		}
 	}
 	pubnub.addListener(listener)
-
-	// subscribe to a channel
-	pubnub.subscribe({
-		channels: [myChannel]
-	});
 }
+
+function sendKey(jsonFile)
+{
+    fetch(jsonFile)
+    .then(response => response.json())
+    .then(responseJson => {
+        if(responseJson.hasOwnProperty('auth_key'))
+        {
+            pubnub.setAuthKey(responseJson.auth_key);
+            pubnub.setCipherKey(responseJson.cipher_key);
+        }
+    });
+}
+
 
 window.onload = setupPubNub;
