@@ -253,7 +253,7 @@ def culture_submit():
 
 
 @app.route("/monitoring")
-# @login_required
+@login_required
 def monitoring():
     cursor = mysql.connection.cursor()
     cursor.execute("select name from culture where culture_id=(select culture_id from ucl where users_id=%s limit 1)",
