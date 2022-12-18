@@ -20,3 +20,8 @@ The system's main controller will be connected to the local Wi-Fi or the local n
 
 ## Fritzing Diagram
 ![Fritzing Diagram](https://i.postimg.cc/qRByhLhL/Screenshot-2022-11-25-at-11-28-16.png)
+
+## External Dependencies
+- Graphs are developed using [C3.js](https://github.com/c3js/c3/releases/tag/v0.7.20)
+- Python packages: [Flask](https://pypi.org/project/Flask/), [Flask-Session](https://pypi.org/project/Flask-Session/), [Flask-MySQLdb](https://pypi.org/project/Flask-MySQLdb/), [bcrypt](https://pypi.org/project/bcrypt/), [pubnub](https://pypi.org/project/pubnub/), [google-auth-oauthlib](https://pypi.org/project/google-auth-oauthlib/), [google-auth](https://pypi.org/project/google-auth/), [python-dotenv](https://pypi.org/project/python-dotenv/)
+ 
