@@ -1,12 +1,11 @@
 import MySQLdb
 import pytest
+import os
 
-#TODO change connection to AWS database
+# MYSQL Database connection to AWS instance
+db = MySQLdb.connect(host=os.getenv('MYSQL_HOST'), port=os.getenv('MYSQL_PORT'), user=os.getenv('MYSQL_USER'), passwd=os.getenv('MYSQL_PASSWORD'), db=os.getenv('MYSQL_DB'))
 
-db = MySQLdb.connect(host="localhost",
-                     user="root",
-                     passwd="",
-                     db="gms")
+
 
 @pytest.mark.parametrize(
     "tempMin,valid",
@@ -80,49 +79,58 @@ def test_temperature_max(tempMax, valid):
 
 
 @pytest.mark.parametrize(
-    "phMax,valid",
+    "humidityMin,valid",
     [
-        (6.0, True),
-        (10.0, False),
-        (8.0, False),
-        (20.1, False),
-        (19.9, False)
+        (70, True),
+        (14, False),
+        (16, False),
+        (15.1, False),
+        (14.9, False)
     ]
 )
-def test_temperature_max(tempMax, valid):
+def test_humidity_min(humidityMin, valid):
     data = {
-
+        'tempMin': 15,
+        'tempMax': 20,
+        'humidityMin': humidityMin,
+        'humidityMax': 80,
         'pHMin': 6.0,
         'pHMax': 7.0
     }
 
     try:
         cur = db.cursor()
-        cur.execute("select * from data_range where pHMax=%s", [pHMax])
+        cur.execute("select * from data_range where humidityMin=%s", [humidityMin])
         user = cur.fetchall()
         assert valid
         assert user is not None
-        assert user[0][3] == data["pHMax"]
-        assert user[0][4] == data["pHMin"]
+        assert user[0][3] == data["tempMin"]
+        assert user[0][4] == data["tempMax"]
+        assert user[0][5] == humidityMin
+        assert user[0][6] == data["humidityMax"]
+        assert user[0][7] == data["pHMin"]
+        assert user[0][8] == data["pHMax"]
     except:
         assert not valid
 
-
 @pytest.mark.parametrize(
-    "phMax,valid",
+    "humidityMax,valid",
     [
-        (65, True),
-        (10.0, False),
-        (8.0, False),
+        (80, True),
+        (19, False),
+        (21, False),
         (20.1, False),
         (19.9, False)
     ]
 )
-def test_humidity(humidityMax, valid):
+def test_humidity_max(humidityMax, valid):
     data = {
-
-        'humidityMax': 65,
-        'humidityMin': 75
+        'tempMin': 15,
+        'tempMax': 20,
+        'humidityMin': 70,
+        'humidityMax': humidityMax,
+        'pHMin': 6.0,
+        'pHMax': 7.0
     }
 
     try:
@@ -131,9 +139,82 @@ def test_humidity(humidityMax, valid):
         user = cur.fetchall()
         assert valid
         assert user is not None
-        assert user[0][3] == data["humidityMax"]
-        assert user[0][4] == data["humidityMin"]
+        assert user[0][3] == data["tempMin"]
+        assert user[0][4] == data["tempMax"]
+        assert user[0][5] == data["humidityMin"]
+        assert user[0][6] == humidityMax
+        assert user[0][7] == data["pHMin"]
+        assert user[0][8] == data["pHMax"]
     except:
         assert not valid
 
 
+@pytest.mark.parametrize(
+    "pHMin,valid",
+    [
+        (6.0, True),
+        (14, False),
+        (16, False),
+        (15.1, False),
+        (14.9, False)
+    ]
+)
+def test_ph_min(pHMin, valid):
+    data = {
+        'tempMin': 15,
+        'tempMax': 20,
+        'humidityMin': 70,
+        'humidityMax': 80,
+        'pHMin': pHMin,
+        'pHMax': 7.0
+    }
+
+    try:
+        cur = db.cursor()
+        cur.execute("select * from data_range where pHMin=%s", [pHMin])
+        user = cur.fetchall()
+        assert valid
+        assert user is not None
+        assert user[0][3] == data["tempMin"]
+        assert user[0][4] == data["tempMax"]
+        assert user[0][5] == data["humidityMin"]
+        assert user[0][6] == data["humidityMax"]
+        assert user[0][7] == pHMin
+        assert user[0][8] == data["pHMax"]
+    except:
+        assert not valid
+
+@pytest.mark.parametrize(
+    "pHMax,valid",
+    [
+        (7.0, True),
+        (19, False),
+        (21, False),
+        (20.1, False),
+        (19.9, False)
+    ]
+)
+def test_ph_max(pHMax, valid):
+    data = {
+        'tempMin': 15,
+        'tempMax': 20,
+        'humidityMin': 70,
+        'humidityMax': 80,
+        'pHMin': 6.0,
+        'pHMax': pHMax
+    }
+
+    try:
+        cur = db.cursor()
+        cur.execute("select * from data_range where pHMax=%s", [pHMax])
+        user = cur.fetchall()
+        assert valid
+        assert user is not None
+        assert user[0][3] == data["tempMin"]
+        assert user[0][4] == data["tempMax"]
+        assert user[0][5] == data["humidityMin"]
+        assert user[0][6] == data["humidityMax"]
+        assert user[0][7] == data["pHMin"]
+        assert user[0][8] == pHMax
+    except:
+        assert not valid

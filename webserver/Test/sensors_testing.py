@@ -1,12 +1,10 @@
 import MySQLdb
 import pytest
+import os
 
-#TODO change connection to AWS database
+# MYSQL Database connection to AWS instance
+db = MySQLdb.connect(host=os.getenv('MYSQL_HOST'), port=os.getenv('MYSQL_PORT'), user=os.getenv('MYSQL_USER'), passwd=os.getenv('MYSQL_PASSWORD'), db=os.getenv('MYSQL_DB'))
 
-db = MySQLdb.connect(host="localhost",
-                     user="root",
-                     passwd="",
-                     db="gms")
 
 @pytest.mark.parametrize(
     "humidity,valid",
